@@ -1,21 +1,134 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <title>تیم‌کشی شانسی</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚽ تیم‌کشی شانسی فوتبال</title>
+
+<style>
+body{
+  margin:0;
+  font-family:tahoma;
+  background:
+    linear-gradient(rgba(0,0,0,.65),rgba(0,0,0,.65)),
+    url("bg.jpg") center/cover no-repeat fixed;
+  color:#fff;
+  text-align:center;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+h1{
+  font-size:34px;
+  margin-bottom:10px;
+}
+
+.card{
+  background:rgba(0,0,0,0.55);
+  border-radius:18px;
+  padding:25px;
+  margin:20px 0;
+  backdrop-filter: blur(6px);
+}
+
+button{
+  padding:16px 28px;
+  margin:10px;
+  font-size:18px;
+  border:none;
+  border-radius:14px;
+  cursor:pointer;
+}
+
+.player{background:#4caf50;color:#fff;}
+.keeper{background:#2196f3;color:#fff;}
+.shuffle{background:#ff9800;color:#000;}
+
+.team{
+  background:rgba(0,0,0,0.6);
+  border-radius:16px;
+  padding:15px;
+  margin:12px 0;
+}
+</style>
 </head>
+
 <body>
+<div class="container">
 
-  <h2>🎲 تیم‌کشی شانسی</h2>
+<h1>⚽ تیم‌کشی شانسی فوتبال</h1>
+<p>هر نفر فقط یک بار می‌تواند وارد شود</p>
 
-  <textarea id="players" placeholder="اسم بازیکن‌ها رو هر خط یکی بنویس"></textarea>
+<div class="card">
+  <h2>تعداد تیم‌ها</h2>
+  <button onclick="setTeams(2)">2 تیم</button>
+  <button onclick="setTeams(3)">3 تیم</button>
+  <button onclick="setTeams(4)">4 تیم</button>
+</div>
 
-  <br>
-  <button onclick="makeTeams()">ساخت تیم‌ها</button>
+<div class="card">
+  <h2>انتخاب نقش</h2>
+  <button class="player" onclick="join('player')">👟 بازیکن</button>
+  <button class="keeper" onclick="join('keeper')">🧤 دروازه‌بان</button>
+</div>
 
-  <div id="result"></div>
+<div class="card">
+  <button class="shuffle" onclick="shuffle()">🎲 قرعه‌کشی تیم‌ها</button>
+</div>
 
-  <script src="script.js"></script>
+<div id="result"></div>
+
+</div>
+
+<script>
+let teamsCount=2;
+let players=[];
+let joined=false;
+
+function setTeams(n){
+  teamsCount=n;
+  alert("تعداد تیم‌ها تنظیم شد: "+n);
+}
+
+function join(role){
+  if(joined){
+    alert("شما قبلاً انتخاب کرده‌اید ❌");
+    return;
+  }
+  players.push({role});
+  joined=true;
+  alert("ثبت شد ✅");
+}
+
+function shuffle(){
+  let teams=[...Array(teamsCount)].map(()=>({players:[],keeper:null}));
+  let shuffled=[...players].sort(()=>Math.random()-0.5);
+
+  shuffled.forEach(p=>{
+    if(p.role==="keeper"){
+      let t=teams.find(t=>!t.keeper);
+      if(t)t.keeper="🧤 دروازه‌بان";
+    }else{
+      let t=teams.sort((a,b)=>a.players.length-b.players.length)[0];
+      if(t.players.length<5)t.players.push("👟 بازیکن");
+    }
+  });
+
+  let html="";
+  teams.forEach((t,i)=>{
+    html+=`<div class="team"><h3>تیم ${i+1}</h3>`;
+    html+=t.keeper ? t.keeper+"<br>" : "❌ بدون دروازه‌بان<br>";
+    t.players.forEach(p=>html+=p+"<br>");
+    html+="</div>";
+  });
+
+  document.getElementById("result").innerHTML=html;
+}
+</script>
+
 </body>
 </html>

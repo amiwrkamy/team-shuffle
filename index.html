@@ -3,426 +3,300 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Team Shuffle — تیم‌کشی شانسی</title>
-<!-- Google font (optional) -->
+<title>تیم‌کشی شانسی فوتبال</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --accent:#1db954;
-    --bg-overlay: rgba(0,0,0,0.55);
-    --card-bg: rgba(255,255,255,0.06);
-    color-scheme: dark;
-  }
-  html,body{height:100%;margin:0;font-family:'Vazirmatn',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
-  body{
-    background: linear-gradient(var(--bg-overlay),var(--bg-overlay)), url('bg.jpg') center/cover no-repeat fixed;
-    display:flex;align-items:flex-start;justify-content:center;padding:32px 12px;
-    color:#fff;
-  }
-  .container{max-width:1100px;width:100%;display:grid;grid-template-columns: 1fr 420px; gap:20px; align-items:start;}
-  header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-  h1{margin:0;font-size:20px;display:flex;align-items:center;gap:10px}
-  .card{background:var(--card-bg);border-radius:12px;padding:16px;box-shadow:0 6px 22px rgba(0,0,0,0.5);}
-  .left{min-height:420px}
-  .controls{display:flex;gap:8px;flex-wrap:wrap}
-  button, select, input[type="text"]{
-    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px 10px;border-radius:8px;
-  }
-  .big-btn{padding:12px 14px;font-weight:600;background:linear-gradient(90deg,var(--accent),#29a06a);border:none}
-  .muted{color:rgba(255,255,255,0.7);font-size:13px}
-  .form-row{display:flex;gap:8px;margin-top:10px;align-items:center}
-  .live-list{max-height:440px;overflow:auto;margin-top:12px}
-  .participant{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);}
-  .role-player{color:#fff}
-  .role-gk{color:#ffd166}
-  .teams{margin-top:12px}
-  .team-card{background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;margin-bottom:8px}
-  .subs{font-size:13px;color:#ddd;margin-top:6px}
-  .admin-panel{display:flex;flex-direction:column;gap:8px}
-  .note{font-size:13px;color:#eee;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:8px;border-radius:8px}
-  footer{grid-column:1/-1;text-align:center;margin-top:12px;color:rgba(255,255,255,0.6);font-size:13px}
-  .badge{background:rgba(0,0,0,0.35);padding:6px 8px;border-radius:999px;font-weight:600}
-  /* responsive */
-  @media(max-width:980px){
-    .container{grid-template-columns:1fr}
-  }
+:root{--accent:#1db954;--card:rgba(255,255,255,0.06);--overlay:rgba(0,0,0,0.55)}
+*{box-sizing:border-box} html,body{height:100%;margin:0;font-family:'Vazirmatn',Tahoma,Arial;direction:rtl}
+body{
+  background: linear-gradient(var(--overlay),var(--overlay)), url('bg.jpg') center/cover no-repeat fixed;
+  color:#fff;padding:20px;
+}
+.container{max-width:1100px;margin:12px auto;display:grid;grid-template-columns:1fr 420px;gap:18px}
+.header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.h1{font-size:20px;font-weight:700}
+.card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+.left{min-height:480px}
+.form-row{display:flex;gap:8px;align-items:center;margin-top:10px}
+.input,select,button{padding:10px;border-radius:10px;border:0;background:rgba(255,255,255,0.04);color:#fff;font-size:15px}
+.big{background:linear-gradient(90deg,var(--accent),#29a06a);border:none;padding:10px 14px;font-weight:700;cursor:pointer}
+.small{font-size:13px;color:rgba(255,255,255,0.85)}
+.live-list{max-height:380px;overflow:auto;margin-top:12px}
+.part{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent)}
+.role-keeper{color:#ffd166;font-weight:700}
+.role-player{color:#b9f6ca}
+.teams{margin-top:12px}
+.team-card{background:rgba(0,0,0,0.35);padding:10px;border-radius:10px;margin-bottom:10px}
+.subs{font-size:13px;color:#ddd;margin-top:8px}
+.footer{grid-column:1/-1;text-align:center;margin-top:10px;color:rgba(255,255,255,0.6);font-size:13px}
+@media(max-width:920px){.container{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>⚽ Team Shuffle — قرعه‌کشی تیمی</h1>
-      <div class="badge">لایو — بدون ورود</div>
-    </header>
-
-    <!-- LEFT: ثبت‌نام و نمایش لیست -->
-    <section class="card left">
-      <h2 style="margin:0 0 8px 0">ثبت‌نام (همه ببینند)</h2>
-      <div class="muted">اسم خود را وارد کن و نقش را انتخاب کن — هر نفر فقط یک‌بار می‌تواند ثبت‌نام کند.</div>
-
-      <div class="form-row">
-        <input id="nameInput" type="text" placeholder="نام (مثال: علی)" style="flex:1" />
-        <select id="roleSelect">
-          <option value="player">⚽ بازیکن</option>
-          <option value="gk">🥅 دروازه‌بان</option>
-        </select>
-        <button id="joinBtn" class="big-btn">ثبت نام</button>
-      </div>
-
-      <div style="margin-top:10px" class="muted">وضعیت ثبت‌نام: <span id="signupStatus">بارگذاری...</span></div>
-
-      <div class="live-list" id="participantsList" aria-live="polite" style="margin-top:12px">
-        <!-- participants will appear here -->
-      </div>
-
-      <div class="teams card" id="teamsArea">
-        <!-- assigned teams -->
-      </div>
-    </section>
-
-    <!-- RIGHT: پنل ادمین و تنظیمات -->
-    <aside class="card">
-      <h3 style="margin:0 0 6px 0">پنل مدیریت (ادمین)</h3>
-      <div class="muted">برای دسترسی ادمین، رمز را وارد کن.</div>
-
-      <div class="admin-panel" style="margin-top:10px">
-        <input id="adminPass" type="text" placeholder="رمز ادمین" />
-        <div style="display:flex;gap:8px">
-          <select id="teamCountSelect">
-            <option value="2">2️⃣  2 تیم</option>
-            <option value="3">3️⃣  3 تیم</option>
-            <option value="4">4️⃣  4 تیم</option>
-          </select>
-          <button id="setTeamsBtn">تنظیم تعداد تیم</button>
-        </div>
-
-        <div style="display:flex;gap:8px">
-          <button id="openSignupBtn">باز کردن ثبت‌نام</button>
-          <button id="closeSignupBtn">بستن ثبت‌نام</button>
-        </div>
-
-        <div style="display:flex;gap:8px">
-          <button id="assignBtn" class="big-btn">🎲 قرعه‌کشی و تقسیم تیم‌ها</button>
-        </div>
-
-        <div class="note" style="margin-top:8px">
-          <div><strong>قوانین:</strong></div>
-          <ul style="margin:6px 0 0 18px">
-            <li>هر تیم باید یک دروازه‌بان داشته باشد (تعداد GK >= تعداد تیم).</li>
-            <li>حداکثر اعضای هر تیم: ۵ نفر (شامل GK). مازاد → تعویضی.</li>
-            <li>اختلاف بین تیم‌ها حداکثر ۱ نفر است.</li>
-            <li>گزینهٔ <em>شانس دوباره</em> حذف شده است.</li>
-          </ul>
-        </div>
-
-        <div style="margin-top:8px" class="muted">تعداد ثبت‌نام‌ها: <span id="countSpan">0</span></div>
-      </div>
-    </aside>
-
-    <footer>طراحی و پیاده‌سازی — Team Shuffle • استفادهٔ آزمایشی با Firebase Realtime DB</footer>
+<div class="container">
+  <div class="header">
+    <div>
+      <div class="h1">⚽ تیم‌کشی شانسی فوتبال</div>
+      <div class="small">هر نفر فقط یک‌بار ثبت‌نام کند — لیست برای همه لحظه‌ای نمایش داده می‌شود</div>
+    </div>
+    <div class="small">بدون رمز — همه می‌توانند ثبت‌نام و قرعه‌کشی کنند</div>
   </div>
 
-  <!-- Firebase (compat simple include) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <!-- LEFT: ثبت نام -->
+  <section class="card left">
+    <h3 style="margin:0">ثبت‌نام</h3>
+    <div class="small" style="margin-top:6px">نام و نقش خود را وارد کن؛ هر نفر فقط یک‌بار.</div>
+
+    <div class="form-row">
+      <input id="nameInput" class="input" placeholder="نام (مثلاً: علی)" />
+      <select id="roleSelect" class="input">
+        <option value="player">⚽ بازیکن</option>
+        <option value="gk">🥅 دروازه‌بان</option>
+      </select>
+      <button id="joinBtn" class="big">✅ ثبت نام</button>
+    </div>
+
+    <div class="form-row" style="margin-top:12px;align-items:center">
+      <div class="small">تعداد تیم‌ها:</div>
+      <select id="teamsSelect" class="input" style="width:120px">
+        <option value="2">2 تیم</option>
+        <option value="3">3 تیم</option>
+        <option value="4">4 تیم</option>
+      </select>
+      <button id="setTeamsBtn" class="input" style="width:140px">تنظیم برای همه</button>
+      <div style="flex:1"></div>
+      <div class="small">وضعیت ثبت‌نام: <span id="signupStatus">در حال بارگذاری...</span></div>
+    </div>
+
+    <div style="margin-top:12px;font-weight:700">لیست ثبت‌نام (زنده)</div>
+    <div id="participants" class="live-list"></div>
+
+    <div class="teams" id="teamsArea"></div>
+  </section>
+
+  <!-- RIGHT: کنترل عمومی -->
+  <aside class="card">
+    <h3 style="margin:0">کنترل</h3>
+    <div class="small" style="margin-top:8px">دکمهٔ شروع تقسیم تیم‌ها (بدون رمز):</div>
+    <div style="margin-top:10px;display:flex;gap:8px">
+      <button id="drawBtn" class="big" style="flex:1">🎲 شروع قرعه‌کشی و نمایش تیم‌ها</button>
+    </div>
+
+    <div style="margin-top:12px" class="small">
+      توضیح: برای شروع مجدد (Reset) بعد از قرعه‌کشی باید از کنسول Firebase مسیر <code>rooms/main</code> را پاک کنید تا ثبت‌نام‌ها و تیم‌ها حذف شوند.
+    </div>
+
+    <div style="margin-top:12px;font-weight:700">آمار</div>
+    <div class="small" style="margin-top:6px">تعداد ثبت‌شده: <span id="count">0</span></div>
+    <div class="small" style="margin-top:6px">تعداد دروازه‌بان‌ها: <span id="gkcount">0</span></div>
+  </aside>
+
+  <div class="footer">آماده و ساده — برای استفادهٔ دوستانه. (برای امنیت/محصول واقعی از Firebase Auth استفاده کن)</div>
+</div>
+
+<!-- firebase compat -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-/* =========== CONFIG (پُر کنید) =========== */
-/* از Firebase کنسول، config را جایگزین کنید */
+/* ======= CONFIG: مقادیر Firebase را اینجا قرار بده =======
+  از Firebase Console -> Project settings -> Add web app -> copy config
+  مثال:
+  const FIREBASE_CONFIG = {
+    apiKey: "....",
+    authDomain: "yourproj.firebaseapp.com",
+    databaseURL: "https://yourproj-default-rtdb.firebaseio.com",
+    projectId: "yourproj",
+    storageBucket: "yourproj.appspot.com",
+    messagingSenderId: "...",
+    appId: "1:..."
+  };
+*/
 const FIREBASE_CONFIG = {
-  apiKey: "PUT_YOUR_apiKey_HERE",
-  authDomain: "PUT_YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://PUT_YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "PUT_YOUR_PROJECT",
-  storageBucket: "PUT_YOUR_PROJECT.appspot.com",
+  apiKey: "PUT_YOUR_apiKey",
+  authDomain: "PUT_YOUR_project.firebaseapp.com",
+  databaseURL: "https://PUT_YOUR_project-default-rtdb.firebaseio.com",
+  projectId: "PUT_YOUR_project",
+  storageBucket: "PUT_YOUR_project.appspot.com",
   messagingSenderId: "PUT_YOUR_messagingSenderId",
   appId: "PUT_YOUR_appId"
 };
-// آدرس تصویر پس‌زمینه (در صورت استفاده از URL خارجی)
-// اگر فایل bg.jpg کنار index.html است آن را تغییر نده.
-const BG_URL = null; // یا 'https://.../your-image.jpg'
+/* ======= end CONFIG ======= */
 
-// رمز سادهٔ ادمین (برای تست) — حتماً برای تولید واقعی آن را تغییر بده
-const ADMIN_PASS = "admin12345";
-/* ========================================= */
-
-if (BG_URL) {
-  document.body.style.background = `linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)), url('${BG_URL}') center/cover no-repeat fixed`;
-}
-
-// init firebase
 firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.database();
 
-// helper uid
-function generateUID() {
-  const s = crypto && crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(3)).join('-') : Math.random().toString(36).slice(2);
-  return 'u_' + Date.now().toString(36) + '_' + s;
-}
-function getLocalUID() {
-  let id = localStorage.getItem('ts_uid');
-  if (!id) { id = generateUID(); localStorage.setItem('ts_uid', id); }
-  return id;
-}
-const LOCAL_UID = getLocalUID();
+// room refs
+const ROOM = 'main';
+const participantsRef = db.ref(`rooms/${ROOM}/participants`);
+const settingsRef = db.ref(`rooms/${ROOM}/settings`);
+const teamsRef = db.ref(`rooms/${ROOM}/teams`);
+
+// local client id to prevent double-register on same device
+let CLIENT_ID = localStorage.getItem('ts_client_id');
+if(!CLIENT_ID){ CLIENT_ID = 'c_' + Math.random().toString(36).slice(2,10); localStorage.setItem('ts_client_id', CLIENT_ID); }
 
 // DOM
 const nameInput = document.getElementById('nameInput');
 const roleSelect = document.getElementById('roleSelect');
 const joinBtn = document.getElementById('joinBtn');
-const participantsList = document.getElementById('participantsList');
+const participantsEl = document.getElementById('participants');
 const signupStatus = document.getElementById('signupStatus');
-const countSpan = document.getElementById('countSpan');
-const adminPassInput = document.getElementById('adminPass');
-const teamCountSelect = document.getElementById('teamCountSelect');
+const teamsSelect = document.getElementById('teamsSelect');
 const setTeamsBtn = document.getElementById('setTeamsBtn');
-const openSignupBtn = document.getElementById('openSignupBtn');
-const closeSignupBtn = document.getElementById('closeSignupBtn');
-const assignBtn = document.getElementById('assignBtn');
+const drawBtn = document.getElementById('drawBtn');
 const teamsArea = document.getElementById('teamsArea');
+const countSpan = document.getElementById('count');
+const gkSpan = document.getElementById('gkcount');
 
-// DB refs
-const ROOM = 'main';
-const roomRef = db.ref('rooms/' + ROOM);
-const participantsRef = db.ref('rooms/' + ROOM + '/participants');
-const settingsRef = db.ref('rooms/' + ROOM + '/settings');
-const teamsRef = db.ref('rooms/' + ROOM + '/teams');
+// utilities
+function el(tag, html){ const d = document.createElement(tag); d.innerHTML = html; return d; }
+function show(msg){ alert(msg); }
+function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
-// utility
-function showToast(msg) {
-  alert(msg); // simple for now
-}
-function shuffleArray(a){
-  for (let i = a.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-// read settings and participants (live)
-let latestSettings = {};
-settingsRef.on('value', snap => {
-  latestSettings = snap.val() || {};
-  if (latestSettings.signupOpen) signupStatus.textContent = 'باز — می‌توانید ثبت‌نام کنید';
-  else signupStatus.textContent = 'بسته — منتظر ادمین';
-  // show teamsCount if available (visual)
-  if (latestSettings.teamsCount) {
-    teamCountSelect.value = latestSettings.teamsCount;
-  }
+// read settings and participants live
+settingsRef.on('value', snap=>{
+  const s = snap.val() || {};
+  const open = (s.signupOpen === undefined) ? true : !!s.signupOpen;
+  signupStatus.textContent = open ? 'باز' : 'بسته';
+  if(s.teamsCount) teamsSelect.value = s.teamsCount;
 });
-participantsRef.on('value', snap => {
-  const data = snap.val() || {};
-  renderParticipants(data);
+participantsRef.on('value', snap=>{
+  const obj = snap.val() || {};
+  renderParticipants(obj);
 });
-
-// teams listener (after assign)
-teamsRef.on('value', snap => {
+teamsRef.on('value', snap=>{
   const t = snap.val();
   renderTeams(t);
 });
 
-// render participants
-function renderParticipants(data) {
-  participantsList.innerHTML = '';
-  const arr = Object.entries(data || {}).map(([id,info]) => ({ id, ...info }));
-  arr.sort((a,b)=> (a.ts||0) - (b.ts||0));
-  countSpan.textContent = arr.length;
-  if (arr.length === 0) {
-    participantsList.innerHTML = '<div class="muted">هنوز کسی ثبت‌نام نکرده است.</div>';
-    return;
-  }
-  for (const p of arr) {
-    const d = document.createElement('div');
-    d.className = 'participant';
-    const left = document.createElement('div');
-    const roleSpan = document.createElement('span');
-    roleSpan.textContent = p.role === 'gk' ? '🥅' : '⚽';
-    roleSpan.style.marginRight = '8px';
-    left.appendChild(roleSpan);
-    const name = document.createElement('strong');
-    name.textContent = p.name || 'بی‌نام';
-    left.appendChild(name);
-    const right = document.createElement('div');
-    right.innerHTML = `<span class="${p.role==='gk'?'role-gk':'role-player'}">${p.role==='gk'?'دروازه‌بان':'بازیکن'}</span>`;
-    d.appendChild(left);
-    d.appendChild(right);
-    participantsList.appendChild(d);
+// render
+function renderParticipants(obj){
+  participantsEl.innerHTML = '';
+  const list = Object.entries(obj).map(([id, v]) => ({id, ...v}));
+  list.sort((a,b) => (a.ts||0) - (b.ts||0));
+  countSpan.textContent = list.length;
+  gkSpan.textContent = list.filter(x=>x.role==='gk').length;
+  if(list.length===0){ participantsEl.innerHTML = '<div class="small">هنوز کسی ثبت‌نام نکرده است</div>'; return; }
+  for(const p of list){
+    const div = document.createElement('div'); div.className='part';
+    const left = document.createElement('div'); left.innerHTML = `<strong>${escapeHtml(p.name)}</strong>`;
+    const right = document.createElement('div'); right.innerHTML = `<span class="${p.role==='gk'?'role-keeper':'role-player'}">${p.role==='gk'?'🥅 دروازه‌بان':'⚽ بازیکن'}</span>`;
+    if(p.clientId === CLIENT_ID) left.innerHTML += ' <small>(شما)</small>';
+    div.appendChild(left); div.appendChild(right);
+    participantsEl.appendChild(div);
   }
 }
 
-// render teams
-function renderTeams(obj) {
+function renderTeams(obj){
   teamsArea.innerHTML = '';
-  if (!obj) return;
-  const keys = Object.keys(obj).filter(k=>k.startsWith('team'));
-  if (!keys.length) return;
-  const header = document.createElement('h3'); header.textContent = 'نتیجهٔ تیم‌بندی'; teamsArea.appendChild(header);
-  for (const k of keys.sort()) {
+  if(!obj) return;
+  const keys = Object.keys(obj).filter(k=>k.startsWith('team')).sort();
+  if(keys.length===0) return;
+  const h = el('div','<h3>نتیجهٔ تیم‌بندی</h3>'); teamsArea.appendChild(h);
+  for(const k of keys){
     const t = obj[k];
-    const card = document.createElement('div'); card.className = 'team-card';
-    const title = document.createElement('div'); title.innerHTML = `<strong>تیم ${ (parseInt(k.replace('team',''))+1) } — ${ (t.members ? t.members.length : 0) } نفر</strong>`;
+    const card = document.createElement('div'); card.className='team-card';
+    const title = document.createElement('div'); title.innerHTML = `<strong>${k.replace('team','تیم ')}</strong>`;
     card.appendChild(title);
-    if (t.members && t.members.length) {
-      for (const m of t.members) {
-        const row = document.createElement('div'); row.style.marginTop='6px';
-        row.innerHTML = `${m.role==='gk' ? '🧤' : '⚽'} &nbsp; <strong>${m.name}</strong> ${m.id?'<small style="opacity:0.7">':' '}`;
-        card.appendChild(row);
+    if(t.members && t.members.length){
+      for(const m of t.members){
+        const r = document.createElement('div'); r.style.marginTop='6px'; r.innerHTML = `${m.role==='gk'?'🧤':'⚽'} &nbsp; <strong>${escapeHtml(m.name)}</strong>`;
+        card.appendChild(r);
       }
     }
-    if (t.subs && t.subs.length) {
-      const subs = document.createElement('div'); subs.className='subs';
-      subs.innerHTML = `<em>🔄 تعویضی‌ها:</em> ${ t.subs.map(s=>s.name).join(' ، ') }`;
-      card.appendChild(subs);
+    if(t.subs && t.subs.length){
+      const s = document.createElement('div'); s.className='subs'; s.innerHTML = `<em>🔄 تعویضی‌ها:</em> ${ t.subs.map(x=>escapeHtml(x.name)).join(' ، ') }`;
+      card.appendChild(s);
     }
     teamsArea.appendChild(card);
   }
 }
 
-// register user
-joinBtn.addEventListener('click', async () => {
-  const name = (nameInput.value || '').trim();
+// escape
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// registration
+joinBtn.addEventListener('click', async ()=>{
+  const name = (nameInput.value||'').trim();
   const role = roleSelect.value;
-  if (!name) return showToast('لطفاً نام خود را وارد کنید.');
-  const settingsSnap = await settingsRef.once('value');
-  const settings = settingsSnap.val() || {};
-  if (!settings.signupOpen) return showToast('ثبت‌نام در حال حاضر بسته است.');
-  // check if already registered
-  const existingSnap = await participantsRef.child(LOCAL_UID).once('value');
-  if (existingSnap.exists()) return showToast('شما قبلاً ثبت‌نام کرده‌اید.');
-  // also ensure unique name optional: (not strictly necessary)
-  // push
-  const data = { name, role, ts: Date.now() };
-  await participantsRef.child(LOCAL_UID).set(data);
+  if(!name) return show('لطفاً نامتان را وارد کنید');
+  // check signup open
+  const meta = (await settingsRef.once('value')).val() || {};
+  if(meta.assigned){ return show('قرعه‌کشی انجام شده — ثبت جدید بسته است'); }
+  const signupOpen = (meta.signupOpen === undefined) ? true : !!meta.signupOpen;
+  if(!signupOpen) return show('ثبت‌نام در حال حاضر بسته است');
+  // check if this client already registered (by CLIENT_ID)
+  const existing = (await participantsRef.child(CLIENT_ID).once('value')).val();
+  if(existing) return show('شما قبلاً ثبت‌نام کرده‌اید (روی همان دستگاه).');
+  // also prevent same name duplication (optional)
+  const all = (await participantsRef.once('value')).val() || {};
+  for(const k in all){ if(all[k].name === name){ return show('این نام قبلاً ثبت شده است؛ اسم دیگری انتخاب کن'); } }
+  // write
+  const rec = { clientId: CLIENT_ID, name, role, ts: Date.now() };
+  await participantsRef.child(CLIENT_ID).set(rec);
   nameInput.value = '';
-  showToast('ثبت‌نام شما با موفقیت انجام شد ✅');
+  show('ثبت‌نام با موفقیت انجام شد ✅');
 });
 
-// admin actions
-async function ensureAdmin() {
-  const v = adminPassInput.value || '';
-  if (!v) { showToast('رمز ادمین را وارد کنید'); return false; }
-  if (v !== ADMIN_PASS) { showToast('رمز اشتباه است'); return false; }
-  return true;
-}
-
-// set teams count
-setTeamsBtn.addEventListener('click', async () => {
-  if (!await ensureAdmin()) return;
-  const num = Number(teamCountSelect.value);
-  await settingsRef.update({ teamsCount: num });
-  showToast('تعداد تیم‌ها تنظیم شد: ' + num);
+// set teams count (for everyone)
+setTeamsBtn.addEventListener('click', async ()=>{
+  const n = Number(teamsSelect.value || 2);
+  await settingsRef.update({ teamsCount: n });
+  show('تعداد تیم‌ها برای همه تنظیم شد: ' + n);
 });
 
-// open/close signup
-openSignupBtn.addEventListener('click', async () => {
-  if (!await ensureAdmin()) return;
-  await settingsRef.update({ signupOpen: true });
-  showToast('ثبت‌نام باز شد.');
-});
-closeSignupBtn.addEventListener('click', async () => {
-  if (!await ensureAdmin()) return;
-  await settingsRef.update({ signupOpen: false });
-  showToast('ثبت‌نام بسته شد.');
-});
-
-// assign function (core algorithm)
-assignBtn.addEventListener('click', async () => {
-  if (!await ensureAdmin()) return;
+// draw / assign teams (public)
+drawBtn.addEventListener('click', async ()=>{
   // read participants and settings
-  const [pSnap, sSnap] = await Promise.all([participantsRef.once('value'), settingsRef.once('value')]);
-  const participants = pSnap.val() || {};
-  const settings = sSnap.val() || {};
-  const teamsCount = Number(settings.teamsCount || teamCountSelect.value || 2);
-
-  const list = Object.entries(participants).map(([id,info]) => ({ id, name: info.name, role: info.role }));
-  if (list.length === 0) return showToast('هیچ شرکت‌کننده‌ای وجود ندارد.');
-  // separate gks and players
+  const participants = (await participantsRef.once('value')).val() || {};
+  const list = Object.values(participants);
+  const settings = (await settingsRef.once('value')).val() || {};
+  const teamsCount = Number(settings.teamsCount || teamsSelect.value || 2);
+  if(list.length === 0) return show('هیچ ثبت‌نامی وجود ندارد');
   const gks = list.filter(x=>x.role==='gk');
   const players = list.filter(x=>x.role!=='gk');
-  if (gks.length < teamsCount) {
-    return showToast(`تعداد دروازه‌بان‌ها کافی نیست — لازم است حداقل ${teamsCount} دروازه‌بان ثبت‌نام کنند.`);
-  }
-
+  if(gks.length < teamsCount) return show(`تعداد دروازه‌بان‌ها کافی نیست — حداقل ${teamsCount} دروازه‌بان لازم است`);
   // shuffle
-  shuffleArray(gks);
-  shuffleArray(players);
-
-  // prepare new teams
-  const newTeams = Array.from({length: teamsCount}, ()=>({ members: [], subs: [] }));
-
-  // assign one GK per team
-  for (let i=0;i<teamsCount;i++){
-    newTeams[i].members.push({ id: gks[i].id, name: gks[i].name, role: 'gk' });
-  }
-
-  // now round-robin assign players to keep balanced and max 5 per team
+  shuffleArray(gks); shuffleArray(players);
+  // prepare teams
+  const teams = Array.from({length: teamsCount}, ()=>({ members: [], subs: [] }));
+  // assign GK per team
+  for(let i=0;i<teamsCount;i++){ teams[i].members.push({ id: gks[i].clientId, name: gks[i].name, role:'gk' }); }
+  // assign players round-robin while keeping max 5
   let idx = 0;
-  for (const p of players){
-    // try to find a team with members < 5 and minimal size
-    // simple approach: try teams in round-robin with modulo
-    let assigned = false;
-    for (let attempt=0; attempt<teamsCount; attempt++){
-      const tIdx = (idx + attempt) % teamsCount;
-      if (newTeams[tIdx].members.length < 5) {
-        newTeams[tIdx].members.push({ id: p.id, name: p.name, role: 'player' });
-        assigned = true; break;
+  for(const p of players){
+    let placed = false;
+    for(let attempt=0; attempt<teamsCount; attempt++){
+      const ti = (idx + attempt) % teamsCount;
+      if(teams[ti].members.length < 5){
+        teams[ti].members.push({ id: p.clientId, name: p.name, role:'player' });
+        placed = true; idx = ti + 1; break;
       }
     }
-    if (!assigned) {
-      // all teams full -> push to team with smallest subs
-      let minSubs = Infinity, pick = 0;
-      for (let j=0;j<teamsCount;j++){
-        if (newTeams[j].subs.length < minSubs) { minSubs = newTeams[j].subs.length; pick = j; }
+    if(!placed){
+      // push to smallest subs
+      let minS = Infinity, pick = 0;
+      for(let j=0;j<teamsCount;j++){
+        if(teams[j].subs.length < minS){ minS = teams[j].subs.length; pick = j; }
       }
-      newTeams[pick].subs.push({ id: p.id, name: p.name, role: 'player' });
+      teams[pick].subs.push({ id: p.clientId, name: p.name, role:'player' });
     }
     idx++;
   }
-
-  // ensure difference between teams at most 1 (members only)
-  // compute sizes:
-  const sizes = newTeams.map(t => t.members.length);
-  const minSize = Math.min(...sizes), maxSize = Math.max(...sizes);
-  if (maxSize - minSize > 1) {
-    // attempt simple rebalancing: move from biggest to smallest while possible
-    // (should rarely happen because round-robin)
-    for (let iter=0; iter<100; iter++){
-      const sizes2 = newTeams.map(t => t.members.length);
-      const minI = sizes2.indexOf(Math.min(...sizes2));
-      const maxI = sizes2.indexOf(Math.max(...sizes2));
-      if (newTeams[maxI].members.length - newTeams[minI].members.length <= 1) break;
-      // move last non-GK player from maxI to minI if exists
-      const idxm = newTeams[maxI].members.findIndex(m=>m.role!=='gk');
-      if (idxm>=0) {
-        const [m] = newTeams[maxI].members.splice(idxm,1);
-        newTeams[minI].members.push(m);
-      } else break;
-    }
-  }
-
-  // write teams to DB (overwrite)
-  // structure: teams: { team0: {members:[...], subs:[...]} }
-  const teamsObj = {};
-  for (let i=0;i<newTeams.length;i++){
-    teamsObj['team' + i] = newTeams[i];
-  }
-  await teamsRef.set(teamsObj);
-  // mark assigned true
-  await settingsRef.update({ assignedAt: Date.now(), assigned: true, teamsCount });
-  showToast('تیم‌ها با موفقیت ساخته شدند ✅');
+  // write to DB
+  const out = {};
+  for(let i=0;i<teams.length;i++){ out['team'+i] = teams[i]; }
+  await teamsRef.set(out);
+  await settingsRef.update({ assigned: true, assignedAt: Date.now(), teamsCount });
+  show('قرعه‌کشی انجام شد — تیم‌ها منتشر شدند ✅');
 });
 
-// initial setup: if no settings in DB, create defaults
-(async function ensureDefaults(){
+// initial defaults: set settings if empty
+(async ()=>{
   const s = (await settingsRef.once('value')).val();
-  if (!s) {
-    await settingsRef.set({ teamsCount: 2, signupOpen: true, assigned: false });
-  }
+  if(!s) await settingsRef.set({ teamsCount: 2, signupOpen: true, assigned: false });
 })();
-
-// (Optional) admin quick demo: if nobody sets admin pass, you can set ADMIN_PASS above
-// End of script
 </script>
 </body>
 </html>

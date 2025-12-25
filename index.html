@@ -3,95 +3,106 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>تیم‌کشی شانسی فوتبال</title>
+<title>تیم‌کشی شانسی فوتبال — دو تیم</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--accent:#1db954;--card:rgba(255,255,255,0.06);--overlay:rgba(0,0,0,0.55)}
+:root{--accent:#1db954;--card:rgba(255,255,255,0.06);--overlay:rgba(0,0,0,0.56)}
 *{box-sizing:border-box} html,body{height:100%;margin:0;font-family:'Vazirmatn',Tahoma,Arial;direction:rtl}
 body{
   background: linear-gradient(var(--overlay),var(--overlay)), url('bg.jpg') center/cover no-repeat fixed;
-  color:#fff;padding:20px;
+  color:#fff;padding:18px;
 }
-.container{max-width:1100px;margin:12px auto;display:grid;grid-template-columns:1fr 420px;gap:18px}
+.container{max-width:1000px;margin:12px auto;display:grid;grid-template-columns:1fr 360px;gap:16px}
 .header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .h1{font-size:20px;font-weight:700}
-.card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
-.left{min-height:480px}
+.card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,0.5)}
+.left{min-height:520px}
 .form-row{display:flex;gap:8px;align-items:center;margin-top:10px}
-.input,select,button{padding:10px;border-radius:10px;border:0;background:rgba(255,255,255,0.04);color:#fff;font-size:15px}
-.big{background:linear-gradient(90deg,var(--accent),#29a06a);border:none;padding:10px 14px;font-weight:700;cursor:pointer}
+.input,select,button{text-align:center;padding:10px;border-radius:10px;border:0;background:rgba(255,255,255,0.04);color:#fff;font-size:15px}
+.big{background:linear-gradient(90deg,var(--accent),#29a06a);border:none;padding:12px 14px;font-weight:700;cursor:pointer}
 .small{font-size:13px;color:rgba(255,255,255,0.85)}
-.live-list{max-height:380px;overflow:auto;margin-top:12px}
+.live-list{max-height:320px;overflow:auto;margin-top:12px}
 .part{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent)}
 .role-keeper{color:#ffd166;font-weight:700}
 .role-player{color:#b9f6ca}
 .teams{margin-top:12px}
 .team-card{background:rgba(0,0,0,0.35);padding:10px;border-radius:10px;margin-bottom:10px}
 .subs{font-size:13px;color:#ddd;margin-top:8px}
+.modal {
+  position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;
+}
+.modal-card{background:#0b0b0b;border-radius:12px;padding:18px;width:360px;text-align:center}
+.spin-ball{width:96px;height:96px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center}
+.ball{width:72px;height:72px;border-radius:50%;background:radial-gradient(circle at 30% 30%, #fff 0%, #eee 25%, #000 26%, #000 27%, #fff 27%);position:relative;animation:spin 1.2s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.confirm {background:linear-gradient(90deg,#00e676,#00c853);color:#002;padding:12px;border-radius:10px;margin-top:12px;font-weight:700}
+.badge{background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:10px}
 .footer{grid-column:1/-1;text-align:center;margin-top:10px;color:rgba(255,255,255,0.6);font-size:13px}
-@media(max-width:920px){.container{grid-template-columns:1fr;}}
+@media(max-width:900px){.container{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
     <div>
-      <div class="h1">⚽ تیم‌کشی شانسی فوتبال</div>
-      <div class="small">هر نفر فقط یک‌بار ثبت‌نام کند — لیست برای همه لحظه‌ای نمایش داده می‌شود</div>
+      <div class="h1">⚽ تیم‌کشی شانسی — ۲ تیم</div>
+      <div class="small">بازیکن، دروازه‌بان و تعویضی — همه لحظه‌ای می‌بینند</div>
     </div>
-    <div class="small">بدون رمز — همه می‌توانند ثبت‌نام و قرعه‌کشی کنند</div>
+    <div class="small">هر کاربر فقط یک‌بار از همان دستگاه</div>
   </div>
 
-  <!-- LEFT: ثبت نام -->
+  <!-- LEFT -->
   <section class="card left">
-    <h3 style="margin:0">ثبت‌نام</h3>
-    <div class="small" style="margin-top:6px">نام و نقش خود را وارد کن؛ هر نفر فقط یک‌بار.</div>
+    <h3 style="margin:0">ثبت‌نام سریع</h3>
+    <div class="small" style="margin-top:6px">فامیلیت رو به انگلیسی وارد کن (فقط حروف لاتین و فاصله مجاز).</div>
 
-    <div class="form-row">
-      <input id="nameInput" class="input" placeholder="نام (مثلاً: علی)" />
-      <select id="roleSelect" class="input">
-        <option value="player">⚽ بازیکن</option>
-        <option value="gk">🥅 دروازه‌بان</option>
-      </select>
-      <button id="joinBtn" class="big">✅ ثبت نام</button>
+    <div style="margin-top:12px">
+      <input id="familyInput" class="input" placeholder="مثال: Amiri" style="width:60%" />
+      <div style="display:inline-block;width:8px"></div>
+      <button id="nextBtn" class="big" style="width:32%">بعدی ▶</button>
     </div>
 
-    <div class="form-row" style="margin-top:12px;align-items:center">
-      <div class="small">تعداد تیم‌ها:</div>
-      <select id="teamsSelect" class="input" style="width:120px">
-        <option value="2">2 تیم</option>
-        <option value="3">3 تیم</option>
-        <option value="4">4 تیم</option>
-      </select>
-      <button id="setTeamsBtn" class="input" style="width:140px">تنظیم برای همه</button>
-      <div style="flex:1"></div>
-      <div class="small">وضعیت ثبت‌نام: <span id="signupStatus">در حال بارگذاری...</span></div>
+    <!-- role / register area -->
+    <div id="roleArea" style="display:none;margin-top:14px">
+      <div class="small">نقش را انتخاب کن:</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button id="rolePlayer" class="input" style="flex:1">👟 بازیکن</button>
+        <button id="roleGk" class="input" style="flex:1">🥅 دروازه‌بان</button>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button id="registerBtn" class="big" style="flex:1">✅ ثبت و پیوستن</button>
+      </div>
     </div>
 
-    <div style="margin-top:12px;font-weight:700">لیست ثبت‌نام (زنده)</div>
+    <div style="margin-top:18px;font-weight:700">لیست ثبت‌نام (زنده)</div>
     <div id="participants" class="live-list"></div>
 
     <div class="teams" id="teamsArea"></div>
   </section>
 
-  <!-- RIGHT: کنترل عمومی -->
+  <!-- RIGHT -->
   <aside class="card">
-    <h3 style="margin:0">کنترل</h3>
-    <div class="small" style="margin-top:8px">دکمهٔ شروع تقسیم تیم‌ها (بدون رمز):</div>
-    <div style="margin-top:10px;display:flex;gap:8px">
-      <button id="drawBtn" class="big" style="flex:1">🎲 شروع قرعه‌کشی و نمایش تیم‌ها</button>
-    </div>
-
-    <div style="margin-top:12px" class="small">
-      توضیح: برای شروع مجدد (Reset) بعد از قرعه‌کشی باید از کنسول Firebase مسیر <code>rooms/main</code> را پاک کنید تا ثبت‌نام‌ها و تیم‌ها حذف شوند.
-    </div>
-
+    <h3 style="margin:0">وضعیت دو تیم (زنده)</h3>
+    <div class="small" style="margin-top:8px">جدول تیم‌ها بلافاصله پس از ثبت‌نام به‌روزرسانی می‌شود.</div>
     <div style="margin-top:12px;font-weight:700">آمار</div>
-    <div class="small" style="margin-top:6px">تعداد ثبت‌شده: <span id="count">0</span></div>
-    <div class="small" style="margin-top:6px">تعداد دروازه‌بان‌ها: <span id="gkcount">0</span></div>
+    <div class="small" style="margin-top:8px">کل ثبت‌شده: <span id="count">0</span></div>
+    <div class="small" style="margin-top:6px">دروازه‌بان‌ها: <span id="gkcount">0</span></div>
+    <div style="margin-top:12px" class="small">قواعد: 2 تیم — هر تیم تا ۵ نفر (شامل GK) — اضافی‌ها تعویضی می‌شوند.</div>
   </aside>
 
-  <div class="footer">آماده و ساده — برای استفادهٔ دوستانه. (برای امنیت/محصول واقعی از Firebase Auth استفاده کن)</div>
+  <div class="footer">نکته: برای شروع مجدد (Reset) بعد از پایان باید از Firebase Console داده‌ها را پاک کنید.</div>
+</div>
+
+<!-- modal on load -->
+<div id="welcomeModal" class="modal" style="display:flex">
+  <div class="modal-card">
+    <div class="spin-ball"><div class="ball" title="soccer"></div></div>
+    <div style="font-weight:800;font-size:18px">خوش آمدی به تیم‌کشی شانسی</div>
+    <div class="small" style="margin-top:8px">فامیلیت انگلیسی وارد کن، نقش را انتخاب کن و ثبت شو — همه در لحظه می‌بینند.</div>
+    <div style="margin-top:12px">
+      <button id="modalClose" class="big">شروع کن</button>
+    </div>
+  </div>
 </div>
 
 <!-- firebase compat -->
@@ -99,19 +110,7 @@ body{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-/* ======= CONFIG: مقادیر Firebase را اینجا قرار بده =======
-  از Firebase Console -> Project settings -> Add web app -> copy config
-  مثال:
-  const FIREBASE_CONFIG = {
-    apiKey: "....",
-    authDomain: "yourproj.firebaseapp.com",
-    databaseURL: "https://yourproj-default-rtdb.firebaseio.com",
-    projectId: "yourproj",
-    storageBucket: "yourproj.appspot.com",
-    messagingSenderId: "...",
-    appId: "1:..."
-  };
-*/
+/* ====== CONFIG: مقدارهای Firebase را از کنسول پروژه‌ات کپی کن و اینجا قرار بده ====== */
 const FIREBASE_CONFIG = {
   apiKey: "PUT_YOUR_apiKey",
   authDomain: "PUT_YOUR_project.firebaseapp.com",
@@ -121,181 +120,196 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "PUT_YOUR_messagingSenderId",
   appId: "PUT_YOUR_appId"
 };
-/* ======= end CONFIG ======= */
-
+/* ===================================================================================== */
 firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.database();
 
 // room refs
 const ROOM = 'main';
 const participantsRef = db.ref(`rooms/${ROOM}/participants`);
-const settingsRef = db.ref(`rooms/${ROOM}/settings`);
 const teamsRef = db.ref(`rooms/${ROOM}/teams`);
+const settingsRef = db.ref(`rooms/${ROOM}/settings`);
 
-// local client id to prevent double-register on same device
-let CLIENT_ID = localStorage.getItem('ts_client_id');
-if(!CLIENT_ID){ CLIENT_ID = 'c_' + Math.random().toString(36).slice(2,10); localStorage.setItem('ts_client_id', CLIENT_ID); }
+// local client id to block double registration on same device
+let CLIENT_ID = localStorage.getItem('ts_client_id_v2');
+if(!CLIENT_ID){ CLIENT_ID = 'c_' + Math.random().toString(36).slice(2,10); localStorage.setItem('ts_client_id_v2', CLIENT_ID); }
 
 // DOM
-const nameInput = document.getElementById('nameInput');
-const roleSelect = document.getElementById('roleSelect');
-const joinBtn = document.getElementById('joinBtn');
+const welcomeModal = document.getElementById('welcomeModal');
+const modalClose = document.getElementById('modalClose');
+const familyInput = document.getElementById('familyInput');
+const nextBtn = document.getElementById('nextBtn');
+const roleArea = document.getElementById('roleArea');
+const rolePlayer = document.getElementById('rolePlayer');
+const roleGk = document.getElementById('roleGk');
+const registerBtn = document.getElementById('registerBtn');
 const participantsEl = document.getElementById('participants');
-const signupStatus = document.getElementById('signupStatus');
-const teamsSelect = document.getElementById('teamsSelect');
-const setTeamsBtn = document.getElementById('setTeamsBtn');
-const drawBtn = document.getElementById('drawBtn');
 const teamsArea = document.getElementById('teamsArea');
 const countSpan = document.getElementById('count');
 const gkSpan = document.getElementById('gkcount');
 
-// utilities
-function el(tag, html){ const d = document.createElement(tag); d.innerHTML = html; return d; }
-function show(msg){ alert(msg); }
-function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+// behavior for modal
+modalClose.addEventListener('click', ()=> { welcomeModal.style.display = 'none'; familyInput.focus(); });
 
-// read settings and participants live
-settingsRef.on('value', snap=>{
-  const s = snap.val() || {};
-  const open = (s.signupOpen === undefined) ? true : !!s.signupOpen;
-  signupStatus.textContent = open ? 'باز' : 'بسته';
-  if(s.teamsCount) teamsSelect.value = s.teamsCount;
+// next button -> show role selection (validate english)
+nextBtn.addEventListener('click', ()=>{
+  const v = (familyInput.value||'').trim();
+  if(!v) return alert('لطفاً فامیلیت را وارد کن');
+  // validate English letters, spaces, hyphen and apostrophe
+  if(!/^[A-Za-z\s'-]+$/.test(v)) return alert('فقط از حروف انگلیسی استفاده کن (A-Z) و فاصله/ - / \' مجاز است.');
+  roleArea.style.display = 'block';
+  rolePlayer.classList.remove('selected'); roleGk.classList.remove('selected');
 });
-participantsRef.on('value', snap=>{
+
+// visual selection
+let selectedRole = 'player';
+rolePlayer.addEventListener('click', ()=> { selectedRole='player'; rolePlayer.style.background='rgba(255,255,255,0.08)'; roleGk.style.background='transparent'; });
+roleGk.addEventListener('click', ()=> { selectedRole='gk'; roleGk.style.background='rgba(255,255,255,0.08)'; rolePlayer.style.background='transparent'; });
+
+// register
+registerBtn.addEventListener('click', async ()=>{
+  const name = (familyInput.value||'').trim();
+  if(!name) return alert('نام را وارد کن');
+  // check local client already registered
+  const existing = (await participantsRef.child(CLIENT_ID).once('value')).val();
+  if(existing) return alert('شما قبلاً ثبت‌نام کرده‌اید (روی همین دستگاه).');
+  // also check if registration already locked by assigned flag? we allow until any time
+  // build record
+  const rec = { clientId: CLIENT_ID, name, role: selectedRole, ts: Date.now() };
+  await participantsRef.child(CLIENT_ID).set(rec);
+  // show big confirmation card
+  showConfirmation(name, selectedRole);
+  familyInput.value = '';
+  roleArea.style.display = 'none';
+  // recompute teams automatically
+  await recomputeTeams();
+});
+
+// realtime listeners
+participantsRef.on('value', snap => {
   const obj = snap.val() || {};
   renderParticipants(obj);
+  // after updating participants, recompute teams (defensive) to keep live consistent
+  recomputeTeams().catch(e=>console.warn('recomputeTeams err', e));
 });
-teamsRef.on('value', snap=>{
-  const t = snap.val();
-  renderTeams(t);
-});
+teamsRef.on('value', snap => { renderTeams(snap.val()); });
 
-// render
+// render participants
 function renderParticipants(obj){
   participantsEl.innerHTML = '';
-  const list = Object.entries(obj).map(([id, v]) => ({id, ...v}));
-  list.sort((a,b) => (a.ts||0) - (b.ts||0));
+  const list = Object.entries(obj||{}).map(([id,v])=>({id, ...v}));
+  list.sort((a,b)=> (a.ts||0) - (b.ts||0));
   countSpan.textContent = list.length;
   gkSpan.textContent = list.filter(x=>x.role==='gk').length;
-  if(list.length===0){ participantsEl.innerHTML = '<div class="small">هنوز کسی ثبت‌نام نکرده است</div>'; return; }
+  if(list.length===0){ participantsEl.innerHTML = '<div class="small">فعلاً کسی ثبت‌نام نکرده است</div>'; return; }
   for(const p of list){
-    const div = document.createElement('div'); div.className='part';
-    const left = document.createElement('div'); left.innerHTML = `<strong>${escapeHtml(p.name)}</strong>`;
+    const d = document.createElement('div'); d.className='part';
+    const left = document.createElement('div'); left.innerHTML = `<strong>${escapeHtml(p.name)}</strong>` + (p.clientId===CLIENT_ID ? ' <small>(شما)</small>' : '');
     const right = document.createElement('div'); right.innerHTML = `<span class="${p.role==='gk'?'role-keeper':'role-player'}">${p.role==='gk'?'🥅 دروازه‌بان':'⚽ بازیکن'}</span>`;
-    if(p.clientId === CLIENT_ID) left.innerHTML += ' <small>(شما)</small>';
-    div.appendChild(left); div.appendChild(right);
-    participantsEl.appendChild(div);
+    d.appendChild(left); d.appendChild(right);
+    participantsEl.appendChild(d);
   }
 }
 
+// render teams
 function renderTeams(obj){
   teamsArea.innerHTML = '';
+  // we expect team0 and team1 keys
   if(!obj) return;
-  const keys = Object.keys(obj).filter(k=>k.startsWith('team')).sort();
-  if(keys.length===0) return;
-  const h = el('div','<h3>نتیجهٔ تیم‌بندی</h3>'); teamsArea.appendChild(h);
-  for(const k of keys){
-    const t = obj[k];
+  const keys = ['team0','team1'];
+  for(let i=0;i<keys.length;i++){
+    const t = obj[keys[i]] || {members:[], subs:[]};
     const card = document.createElement('div'); card.className='team-card';
-    const title = document.createElement('div'); title.innerHTML = `<strong>${k.replace('team','تیم ')}</strong>`;
+    const title = document.createElement('div'); title.innerHTML = `<strong>تیم ${i+1} — ${ (t.members? t.members.length:0) } نفر</strong>`;
     card.appendChild(title);
     if(t.members && t.members.length){
       for(const m of t.members){
-        const r = document.createElement('div'); r.style.marginTop='6px'; r.innerHTML = `${m.role==='gk'?'🧤':'⚽'} &nbsp; <strong>${escapeHtml(m.name)}</strong>`;
-        card.appendChild(r);
+        const row = document.createElement('div'); row.style.marginTop='6px';
+        row.innerHTML = `${m.role==='gk'?'🧤':'⚽'} &nbsp; <strong>${escapeHtml(m.name)}</strong>`;
+        card.appendChild(row);
       }
+    } else {
+      const emptyLine = document.createElement('div'); emptyLine.style.marginTop='8px'; emptyLine.innerHTML = `<em style="opacity:0.9">— (خالی)</em>`; card.appendChild(emptyLine);
     }
     if(t.subs && t.subs.length){
-      const s = document.createElement('div'); s.className='subs'; s.innerHTML = `<em>🔄 تعویضی‌ها:</em> ${ t.subs.map(x=>escapeHtml(x.name)).join(' ، ') }`;
-      card.appendChild(s);
+      const subs = document.createElement('div'); subs.className='subs';
+      subs.innerHTML = `<em>🔄 تعویضی‌ها:</em> ${ t.subs.map(x=>escapeHtml(x.name)).join(' ، ') }`;
+      card.appendChild(subs);
     }
     teamsArea.appendChild(card);
   }
 }
 
-// escape
+// helper escape
 function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// registration
-joinBtn.addEventListener('click', async ()=>{
-  const name = (nameInput.value||'').trim();
-  const role = roleSelect.value;
-  if(!name) return show('لطفاً نامتان را وارد کنید');
-  // check signup open
-  const meta = (await settingsRef.once('value')).val() || {};
-  if(meta.assigned){ return show('قرعه‌کشی انجام شده — ثبت جدید بسته است'); }
-  const signupOpen = (meta.signupOpen === undefined) ? true : !!meta.signupOpen;
-  if(!signupOpen) return show('ثبت‌نام در حال حاضر بسته است');
-  // check if this client already registered (by CLIENT_ID)
-  const existing = (await participantsRef.child(CLIENT_ID).once('value')).val();
-  if(existing) return show('شما قبلاً ثبت‌نام کرده‌اید (روی همان دستگاه).');
-  // also prevent same name duplication (optional)
-  const all = (await participantsRef.once('value')).val() || {};
-  for(const k in all){ if(all[k].name === name){ return show('این نام قبلاً ثبت شده است؛ اسم دیگری انتخاب کن'); } }
-  // write
-  const rec = { clientId: CLIENT_ID, name, role, ts: Date.now() };
-  await participantsRef.child(CLIENT_ID).set(rec);
-  nameInput.value = '';
-  show('ثبت‌نام با موفقیت انجام شد ✅');
-});
+// show confirmation big card
+function showConfirmation(name, role){
+  const modal = document.createElement('div'); modal.className='modal';
+  const card = document.createElement('div'); card.className='modal-card';
+  const icon = document.createElement('div'); icon.className='spin-ball'; icon.innerHTML = `<div style="width:64px;height:64px;border-radius:8px;background:linear-gradient(90deg,#fff,#eee);display:flex;align-items:center;justify-content:center;color:#002;font-weight:800">✅</div>`;
+  const text = document.createElement('div'); text.style.marginTop='8px'; text.innerHTML = `<strong>درخواست شما ثبت شد</strong><div style="margin-top:8px">${escapeHtml(name)} — ${role==='gk' ? '🥅 دروازه‌بان' : '⚽ بازیکن'}</div>`;
+  card.appendChild(icon); card.appendChild(text);
+  modal.appendChild(card); document.body.appendChild(modal);
+  setTimeout(()=>{ modal.remove(); }, 1600);
+}
 
-// set teams count (for everyone)
-setTeamsBtn.addEventListener('click', async ()=>{
-  const n = Number(teamsSelect.value || 2);
-  await settingsRef.update({ teamsCount: n });
-  show('تعداد تیم‌ها برای همه تنظیم شد: ' + n);
-});
-
-// draw / assign teams (public)
-drawBtn.addEventListener('click', async ()=>{
-  // read participants and settings
-  const participants = (await participantsRef.once('value')).val() || {};
-  const list = Object.values(participants);
-  const settings = (await settingsRef.once('value')).val() || {};
-  const teamsCount = Number(settings.teamsCount || teamsSelect.value || 2);
-  if(list.length === 0) return show('هیچ ثبت‌نامی وجود ندارد');
-  const gks = list.filter(x=>x.role==='gk');
-  const players = list.filter(x=>x.role!=='gk');
-  if(gks.length < teamsCount) return show(`تعداد دروازه‌بان‌ها کافی نیست — حداقل ${teamsCount} دروازه‌بان لازم است`);
-  // shuffle
-  shuffleArray(gks); shuffleArray(players);
-  // prepare teams
-  const teams = Array.from({length: teamsCount}, ()=>({ members: [], subs: [] }));
-  // assign GK per team
-  for(let i=0;i<teamsCount;i++){ teams[i].members.push({ id: gks[i].clientId, name: gks[i].name, role:'gk' }); }
-  // assign players round-robin while keeping max 5
-  let idx = 0;
-  for(const p of players){
-    let placed = false;
-    for(let attempt=0; attempt<teamsCount; attempt++){
-      const ti = (idx + attempt) % teamsCount;
-      if(teams[ti].members.length < 5){
-        teams[ti].members.push({ id: p.clientId, name: p.name, role:'player' });
-        placed = true; idx = ti + 1; break;
-      }
+// core: recompute teams automatically based on all participants
+async function recomputeTeams(){
+  try {
+    const participants = (await participantsRef.once('value')).val() || {};
+    const list = Object.values(participants);
+    // always 2 teams
+    const teamsCount = 2;
+    // separate gks and players
+    const gks = list.filter(x=>x.role==='gk');
+    const players = list.filter(x=>x.role!=='gk');
+    // shuffle both lists
+    shuffleArray(gks); shuffleArray(players);
+    // prepare teams
+    const teams = Array.from({length:teamsCount}, ()=>({ members: [], subs: [] }));
+    // assign gks to teams if available; if not enough, leave empty
+    for(let i=0;i<teamsCount;i++){
+      if(gks[i]) teams[i].members.push({ id: gks[i].clientId, name: gks[i].name, role:'gk' });
+      // else leave empty slot (no gk)
     }
-    if(!placed){
-      // push to smallest subs
-      let minS = Infinity, pick = 0;
-      for(let j=0;j<teamsCount;j++){
-        if(teams[j].subs.length < minS){ minS = teams[j].subs.length; pick = j; }
+    // assign players round-robin while respecting max 5 per team (including GK)
+    let idx = 0;
+    for(const p of players){
+      let placed = false;
+      for(let attempt=0; attempt<teamsCount; attempt++){
+        const tIdx = (idx + attempt) % teamsCount;
+        const currentCount = teams[tIdx].members.length;
+        if(currentCount < 5){
+          teams[tIdx].members.push({ id: p.clientId, name: p.name, role:'player' });
+          placed = true; idx = tIdx + 1; break;
+        }
       }
-      teams[pick].subs.push({ id: p.clientId, name: p.name, role:'player' });
+      if(!placed){
+        // all teams full -> put into subs with smallest subs
+        let minSubs = Infinity, pick = 0;
+        for(let j=0;j<teamsCount;j++){
+          if(teams[j].subs.length < minSubs){ minSubs = teams[j].subs.length; pick = j; }
+        }
+        teams[pick].subs.push({ id: p.clientId, name: p.name, role:'player' });
+      }
+      idx++;
     }
-    idx++;
+    // balance attempt (should usually be balanced already)
+    // write to DB (atomic overwrite)
+    const out = { team0: teams[0], team1: teams[1] };
+    await teamsRef.set(out);
+    // also save settings meta
+    await settingsRef.update({ teamsCount: teamsCount, lastUpdated: Date.now() });
+  } catch(err) {
+    console.error('recomputeTeams error', err);
   }
-  // write to DB
-  const out = {};
-  for(let i=0;i<teams.length;i++){ out['team'+i] = teams[i]; }
-  await teamsRef.set(out);
-  await settingsRef.update({ assigned: true, assignedAt: Date.now(), teamsCount });
-  show('قرعه‌کشی انجام شد — تیم‌ها منتشر شدند ✅');
-});
+}
 
-// initial defaults: set settings if empty
+// initial: ensure settings default
 (async ()=>{
   const s = (await settingsRef.once('value')).val();
-  if(!s) await settingsRef.set({ teamsCount: 2, signupOpen: true, assigned: false });
+  if(!s) settingsRef.set({ teamsCount: 2, signupOpen: true, assigned: false });
 })();
 </script>
 </body>

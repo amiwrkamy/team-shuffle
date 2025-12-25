@@ -3,114 +3,135 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>تیم‌کشی شانسی فوتبال — دو تیم</title>
+<title>Team Shuffle — تیم‌کشی شانسی (دو تیم)</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--accent:#1db954;--card:rgba(255,255,255,0.06);--overlay:rgba(0,0,0,0.56)}
-*{box-sizing:border-box} html,body{height:100%;margin:0;font-family:'Vazirmatn',Tahoma,Arial;direction:rtl}
-body{
-  background: linear-gradient(var(--overlay),var(--overlay)), url('bg.jpg') center/cover no-repeat fixed;
-  color:#fff;padding:18px;
+:root{
+  --bg1: #06102b; /* dark navy */
+  --bg2: #000814; /* black-blue */
+  --accent1: #00b0ff; /* blue */
+  --accent2: #ffd600; /* yellow */
+  --accent3: #1db954; /* green */
+  --accent4: #ff3b30; /* red */
+  --card: rgba(255,255,255,0.04);
 }
-.container{max-width:1000px;margin:12px auto;display:grid;grid-template-columns:1fr 360px;gap:16px}
-.header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.h1{font-size:20px;font-weight:700}
-.card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 8px 22px rgba(0,0,0,0.5)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:'Vazirmatn',Tahoma,Arial;direction:rtl}
+body{
+  background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+  color:#fff;padding:18px;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+}
+.container{max-width:1100px;margin:12px auto;display:grid;grid-template-columns:1fr 380px;gap:18px}
+.header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.h1{font-size:20px;font-weight:700;color:var(--accent1)}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:14px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.6)}
 .left{min-height:520px}
 .form-row{display:flex;gap:8px;align-items:center;margin-top:10px}
-.input,select,button{text-align:center;padding:10px;border-radius:10px;border:0;background:rgba(255,255,255,0.04);color:#fff;font-size:15px}
-.big{background:linear-gradient(90deg,var(--accent),#29a06a);border:none;padding:12px 14px;font-weight:700;cursor:pointer}
-.small{font-size:13px;color:rgba(255,255,255,0.85)}
+.input,select,button{padding:10px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:#fff;font-size:15px}
+.big{background:linear-gradient(90deg,var(--accent1),#0066cc);border:none;padding:12px 14px;font-weight:700;cursor:pointer;color:#001}
+.big:disabled{opacity:0.6;cursor:not-allowed}
+.small{font-size:13px;color:rgba(255,255,255,0.8)}
 .live-list{max-height:320px;overflow:auto;margin-top:12px}
-.part{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent)}
-.role-keeper{color:#ffd166;font-weight:700}
-.role-player{color:#b9f6ca}
-.teams{margin-top:12px}
-.team-card{background:rgba(0,0,0,0.35);padding:10px;border-radius:10px;margin-bottom:10px}
+.part{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;margin-bottom:10px;background:linear-gradient(90deg, rgba(0,0,0,0.25), rgba(255,255,255,0.01))}
+.role-keeper{color:var(--accent2);font-weight:700}
+.role-player{color:var(--accent3);font-weight:700}
+.teams{margin-top:14px}
+.team-card{background:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.01));padding:12px;border-radius:10px;margin-bottom:12px; border: 1px solid rgba(255,255,255,0.03)}
+.team-title{display:flex;align-items:center;gap:10px;font-weight:800}
 .subs{font-size:13px;color:#ddd;margin-top:8px}
-.modal {
-  position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;
-}
-.modal-card{background:#0b0b0b;border-radius:12px;padding:18px;width:360px;text-align:center}
-.spin-ball{width:96px;height:96px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center}
-.ball{width:72px;height:72px;border-radius:50%;background:radial-gradient(circle at 30% 30%, #fff 0%, #eee 25%, #000 26%, #000 27%, #fff 27%);position:relative;animation:spin 1.2s linear infinite}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.confirm {background:linear-gradient(90deg,#00e676,#00c853);color:#002;padding:12px;border-radius:10px;margin-top:12px;font-weight:700}
-.badge{background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:10px}
 .footer{grid-column:1/-1;text-align:center;margin-top:10px;color:rgba(255,255,255,0.6);font-size:13px}
-@media(max-width:900px){.container{grid-template-columns:1fr}}
+
+/* modal / welcome animation like telegram sticker */
+.modal{position:fixed;left:0;top:0;right:0;bottom:0;background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6));display:flex;align-items:center;justify-content:center;z-index:9999}
+.modal-card{background:linear-gradient(180deg,#031028,#04112b);border-radius:16px;padding:22px;width:420px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.7)}
+.ballWrap{width:140px;height:140px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;position:relative}
+.ballEmoji{
+  font-size:72px; line-height:1; display:inline-block;
+  transform-origin:center;
+  animation: floaty 1.6s ease-in-out infinite, rotateBall 2.2s linear infinite;
+  text-shadow: 0 6px 24px rgba(0,0,0,0.6);
+}
+@keyframes rotateBall { from{ transform: rotate(0deg)} to{ transform: rotate(360deg)} }
+@keyframes floaty { 0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)} }
+
+.confirm {
+  margin-top:12px;background:linear-gradient(90deg,var(--accent3),var(--accent1));color:#001;padding:12px;border-radius:12px;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,0.5);
+}
+
+/* mobile */
+@media(max-width:980px){.container{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <div>
-      <div class="h1">⚽ تیم‌کشی شانسی — ۲ تیم</div>
-      <div class="small">بازیکن، دروازه‌بان و تعویضی — همه لحظه‌ای می‌بینند</div>
+  <div class="container">
+    <div class="header">
+      <div>
+        <div class="h1">⚽ Team Shuffle — دو تیم (شانسی)</div>
+        <div class="small">ثبت‌نام ساده — همه لحظه‌ای ببینند</div>
+      </div>
+      <div class="small">هر نفر فقط یک‌بار (همان دستگاه)</div>
     </div>
-    <div class="small">هر کاربر فقط یک‌بار از همان دستگاه</div>
+
+    <!-- LEFT -->
+    <section class="card left">
+      <h3 style="margin:0">ثبت‌نام سریع</h3>
+      <div class="small" style="margin-top:6px">فامیلیت را به انگلیسی وارد کن و بعد نقش را انتخاب کن.</div>
+
+      <div class="form-row" style="margin-top:12px;">
+        <input id="familyInput" class="input" placeholder="مثال: Amiri" style="flex:1" />
+        <button id="nextBtn" class="big" style="width:140px">بعدی ▶</button>
+      </div>
+
+      <div id="roleArea" style="display:none;margin-top:14px">
+        <div class="small">نقش را انتخاب کن:</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button id="rolePlayer" class="input" style="flex:1">👟 بازیکن</button>
+          <button id="roleGk" class="input" style="flex:1">🥅 دروازه‌بان</button>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button id="registerBtn" class="big" style="flex:1">✅ ثبت و پیوستن</button>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;font-weight:700">لیست ثبت‌نام (زنده)</div>
+      <div id="participants" class="live-list"></div>
+
+      <div class="teams" id="teamsArea"></div>
+    </section>
+
+    <!-- RIGHT -->
+    <aside class="card">
+      <h3 style="margin:0">وضعیت تیم‌ها</h3>
+      <div class="small" style="margin-top:8px">دو تیم — هر تیم تا ۵ نفر (شامل GK) — باقیمانده تعویضی</div>
+      <div style="margin-top:12px;font-weight:700">آمار</div>
+      <div class="small" style="margin-top:8px">کل ثبت‌شده: <span id="count">0</span></div>
+      <div class="small" style="margin-top:6px">دروازه‌بان‌ها: <span id="gkcount">0</span></div>
+      <div style="margin-top:14px">
+        <button id="forceRecompute" class="input" style="width:100%">♻️ بازچینش دستی (در صورت نیاز)</button>
+      </div>
+    </aside>
+
   </div>
 
-  <!-- LEFT -->
-  <section class="card left">
-    <h3 style="margin:0">ثبت‌نام سریع</h3>
-    <div class="small" style="margin-top:6px">فامیلیت رو به انگلیسی وارد کن (فقط حروف لاتین و فاصله مجاز).</div>
-
-    <div style="margin-top:12px">
-      <input id="familyInput" class="input" placeholder="مثال: Amiri" style="width:60%" />
-      <div style="display:inline-block;width:8px"></div>
-      <button id="nextBtn" class="big" style="width:32%">بعدی ▶</button>
-    </div>
-
-    <!-- role / register area -->
-    <div id="roleArea" style="display:none;margin-top:14px">
-      <div class="small">نقش را انتخاب کن:</div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button id="rolePlayer" class="input" style="flex:1">👟 بازیکن</button>
-        <button id="roleGk" class="input" style="flex:1">🥅 دروازه‌بان</button>
+  <!-- welcome modal -->
+  <div id="welcomeModal" class="modal">
+    <div class="modal-card">
+      <div class="ballWrap"><div class="ballEmoji">⚽</div></div>
+      <h2 style="margin:6px 0 0 0">خوش آمدی!</h2>
+      <div class="small" style="margin-top:8px">فامیلیت را وارد کن، نقش را انتخاب کن و ثبت شو — همه در لیست لحظه‌ای دیده می‌شوند</div>
+      <div style="margin-top:14px">
+        <button id="modalContinue" class="confirm">شروع کن</button>
       </div>
-      <div style="margin-top:10px;display:flex;gap:8px">
-        <button id="registerBtn" class="big" style="flex:1">✅ ثبت و پیوستن</button>
-      </div>
-    </div>
-
-    <div style="margin-top:18px;font-weight:700">لیست ثبت‌نام (زنده)</div>
-    <div id="participants" class="live-list"></div>
-
-    <div class="teams" id="teamsArea"></div>
-  </section>
-
-  <!-- RIGHT -->
-  <aside class="card">
-    <h3 style="margin:0">وضعیت دو تیم (زنده)</h3>
-    <div class="small" style="margin-top:8px">جدول تیم‌ها بلافاصله پس از ثبت‌نام به‌روزرسانی می‌شود.</div>
-    <div style="margin-top:12px;font-weight:700">آمار</div>
-    <div class="small" style="margin-top:8px">کل ثبت‌شده: <span id="count">0</span></div>
-    <div class="small" style="margin-top:6px">دروازه‌بان‌ها: <span id="gkcount">0</span></div>
-    <div style="margin-top:12px" class="small">قواعد: 2 تیم — هر تیم تا ۵ نفر (شامل GK) — اضافی‌ها تعویضی می‌شوند.</div>
-  </aside>
-
-  <div class="footer">نکته: برای شروع مجدد (Reset) بعد از پایان باید از Firebase Console داده‌ها را پاک کنید.</div>
-</div>
-
-<!-- modal on load -->
-<div id="welcomeModal" class="modal" style="display:flex">
-  <div class="modal-card">
-    <div class="spin-ball"><div class="ball" title="soccer"></div></div>
-    <div style="font-weight:800;font-size:18px">خوش آمدی به تیم‌کشی شانسی</div>
-    <div class="small" style="margin-top:8px">فامیلیت انگلیسی وارد کن، نقش را انتخاب کن و ثبت شو — همه در لحظه می‌بینند.</div>
-    <div style="margin-top:12px">
-      <button id="modalClose" class="big">شروع کن</button>
     </div>
   </div>
-</div>
 
-<!-- firebase compat -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-/* ====== CONFIG: مقدارهای Firebase را از کنسول پروژه‌ات کپی کن و اینجا قرار بده ====== */
+/* ====== FIREBASE CONFIG: این قسمت را با مقادیر پروژهٔ خودت جایگزین کن ====== */
 const FIREBASE_CONFIG = {
   apiKey: "PUT_YOUR_apiKey",
   authDomain: "PUT_YOUR_project.firebaseapp.com",
@@ -120,23 +141,28 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "PUT_YOUR_messagingSenderId",
   appId: "PUT_YOUR_appId"
 };
-/* ===================================================================================== */
+/* ======================================================================== */
+
+// simple sanity check
+if (!FIREBASE_CONFIG || (FIREBASE_CONFIG.apiKey || '').startsWith('PUT_YOUR')) {
+  setTimeout(()=>{ alert('⚠️ لطفاً FIREBASE_CONFIG را در index.html پر کنید (مقادیر از Firebase Console).'); }, 300);
+}
+
 firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.database();
 
-// room refs
 const ROOM = 'main';
 const participantsRef = db.ref(`rooms/${ROOM}/participants`);
 const teamsRef = db.ref(`rooms/${ROOM}/teams`);
 const settingsRef = db.ref(`rooms/${ROOM}/settings`);
 
-// local client id to block double registration on same device
-let CLIENT_ID = localStorage.getItem('ts_client_id_v2');
-if(!CLIENT_ID){ CLIENT_ID = 'c_' + Math.random().toString(36).slice(2,10); localStorage.setItem('ts_client_id_v2', CLIENT_ID); }
+// local client id
+let CLIENT_ID = localStorage.getItem('ts_client_id_v3');
+if (!CLIENT_ID) { CLIENT_ID = 'c_' + Math.random().toString(36).slice(2,10); localStorage.setItem('ts_client_id_v3', CLIENT_ID); }
 
 // DOM
 const welcomeModal = document.getElementById('welcomeModal');
-const modalClose = document.getElementById('modalClose');
+const modalContinue = document.getElementById('modalContinue');
 const familyInput = document.getElementById('familyInput');
 const nextBtn = document.getElementById('nextBtn');
 const roleArea = document.getElementById('roleArea');
@@ -147,62 +173,76 @@ const participantsEl = document.getElementById('participants');
 const teamsArea = document.getElementById('teamsArea');
 const countSpan = document.getElementById('count');
 const gkSpan = document.getElementById('gkcount');
+const forceRecompute = document.getElementById('forceRecompute');
 
-// behavior for modal
-modalClose.addEventListener('click', ()=> { welcomeModal.style.display = 'none'; familyInput.focus(); });
+let selectedRole = 'player';
 
-// next button -> show role selection (validate english)
-nextBtn.addEventListener('click', ()=>{
+// modal controls
+modalContinue.addEventListener('click', ()=> { welcomeModal.style.display = 'none'; familyInput.focus(); });
+
+// next: validate english name
+nextBtn.addEventListener('click', ()=> {
   const v = (familyInput.value||'').trim();
-  if(!v) return alert('لطفاً فامیلیت را وارد کن');
-  // validate English letters, spaces, hyphen and apostrophe
-  if(!/^[A-Za-z\s'-]+$/.test(v)) return alert('فقط از حروف انگلیسی استفاده کن (A-Z) و فاصله/ - / \' مجاز است.');
+  if (!v) return alert('لطفاً فامیلیت را وارد کن');
+  if (!/^[A-Za-z\s'-]+$/.test(v)) return alert('فقط حروف انگلیسی (A-Z)، فاصله، \' و - مجاز است.');
   roleArea.style.display = 'block';
-  rolePlayer.classList.remove('selected'); roleGk.classList.remove('selected');
+  rolePlayer.style.background='rgba(255,255,255,0.03)';
+  roleGk.style.background='transparent';
+  selectedRole = 'player';
 });
 
-// visual selection
-let selectedRole = 'player';
-rolePlayer.addEventListener('click', ()=> { selectedRole='player'; rolePlayer.style.background='rgba(255,255,255,0.08)'; roleGk.style.background='transparent'; });
-roleGk.addEventListener('click', ()=> { selectedRole='gk'; roleGk.style.background='rgba(255,255,255,0.08)'; rolePlayer.style.background='transparent'; });
+// role select visuals
+rolePlayer.addEventListener('click', ()=>{ selectedRole='player'; rolePlayer.style.background='rgba(255,255,255,0.03)'; roleGk.style.background='transparent'; });
+roleGk.addEventListener('click', ()=>{ selectedRole='gk'; roleGk.style.background='rgba(255,255,255,0.03)'; rolePlayer.style.background='transparent'; });
 
-// register
+// register button
 registerBtn.addEventListener('click', async ()=>{
   const name = (familyInput.value||'').trim();
-  if(!name) return alert('نام را وارد کن');
-  // check local client already registered
-  const existing = (await participantsRef.child(CLIENT_ID).once('value')).val();
-  if(existing) return alert('شما قبلاً ثبت‌نام کرده‌اید (روی همین دستگاه).');
-  // also check if registration already locked by assigned flag? we allow until any time
-  // build record
+  if (!name) return alert('نام را وارد کن');
+  // check if already registered on this client
+  try {
+    const existing = (await participantsRef.child(CLIENT_ID).once('value')).val();
+    if (existing) { return alert('شما قبلاً ثبت‌نام کرده‌اید (روی همین دستگاه).'); }
+  } catch(err) {
+    console.error('read existing error', err);
+    return alert('خطا در بررسی ثبت‌نام قبلی — در کنسول خطا را بررسی کن');
+  }
+
+  // write record
   const rec = { clientId: CLIENT_ID, name, role: selectedRole, ts: Date.now() };
-  await participantsRef.child(CLIENT_ID).set(rec);
-  // show big confirmation card
-  showConfirmation(name, selectedRole);
-  familyInput.value = '';
-  roleArea.style.display = 'none';
-  // recompute teams automatically
-  await recomputeTeams();
+  registerBtn.disabled = true;
+  try {
+    await participantsRef.child(CLIENT_ID).set(rec);
+    showConfirmation(name, selectedRole);
+    familyInput.value = '';
+    roleArea.style.display = 'none';
+    // teams recompute happens in participantsRef.on('value') listener
+  } catch(err) {
+    console.error('write error', err);
+    alert('❌ ثبت‌نام انجام نشد — مطمئن شو FIREBASE_CONFIG پر شده و قوانین Realtime DB اجازهٔ نوشتن می‌دهد.');
+  } finally {
+    registerBtn.disabled = false;
+  }
 });
 
 // realtime listeners
 participantsRef.on('value', snap => {
   const obj = snap.val() || {};
   renderParticipants(obj);
-  // after updating participants, recompute teams (defensive) to keep live consistent
-  recomputeTeams().catch(e=>console.warn('recomputeTeams err', e));
+  // recompute teams on every change (keeps live)
+  recomputeTeams().catch(e=>console.error('recompute error', e));
 });
-teamsRef.on('value', snap => { renderTeams(snap.val()); });
+teamsRef.on('value', snap => renderTeams(snap.val()));
 
 // render participants
 function renderParticipants(obj){
   participantsEl.innerHTML = '';
-  const list = Object.entries(obj||{}).map(([id,v])=>({id, ...v}));
-  list.sort((a,b)=> (a.ts||0) - (b.ts||0));
+  const list = Object.entries(obj||{}).map(([id,v]) => ({id, ...v}));
+  list.sort((a,b) => (a.ts||0) - (b.ts||0));
   countSpan.textContent = list.length;
   gkSpan.textContent = list.filter(x=>x.role==='gk').length;
-  if(list.length===0){ participantsEl.innerHTML = '<div class="small">فعلاً کسی ثبت‌نام نکرده است</div>'; return; }
-  for(const p of list){
+  if (list.length === 0) { participantsEl.innerHTML = '<div class="small">هنوز کسی ثبت‌نام نکرده</div>'; return; }
+  for (const p of list){
     const d = document.createElement('div'); d.className='part';
     const left = document.createElement('div'); left.innerHTML = `<strong>${escapeHtml(p.name)}</strong>` + (p.clientId===CLIENT_ID ? ' <small>(شما)</small>' : '');
     const right = document.createElement('div'); right.innerHTML = `<span class="${p.role==='gk'?'role-keeper':'role-player'}">${p.role==='gk'?'🥅 دروازه‌بان':'⚽ بازیکن'}</span>`;
@@ -211,106 +251,95 @@ function renderParticipants(obj){
   }
 }
 
-// render teams
 function renderTeams(obj){
   teamsArea.innerHTML = '';
-  // we expect team0 and team1 keys
-  if(!obj) return;
-  const keys = ['team0','team1'];
-  for(let i=0;i<keys.length;i++){
-    const t = obj[keys[i]] || {members:[], subs:[]};
-    const card = document.createElement('div'); card.className='team-card';
-    const title = document.createElement('div'); title.innerHTML = `<strong>تیم ${i+1} — ${ (t.members? t.members.length:0) } نفر</strong>`;
-    card.appendChild(title);
-    if(t.members && t.members.length){
-      for(const m of t.members){
-        const row = document.createElement('div'); row.style.marginTop='6px';
-        row.innerHTML = `${m.role==='gk'?'🧤':'⚽'} &nbsp; <strong>${escapeHtml(m.name)}</strong>`;
-        card.appendChild(row);
-      }
-    } else {
-      const emptyLine = document.createElement('div'); emptyLine.style.marginTop='8px'; emptyLine.innerHTML = `<em style="opacity:0.9">— (خالی)</em>`; card.appendChild(emptyLine);
-    }
-    if(t.subs && t.subs.length){
-      const subs = document.createElement('div'); subs.className='subs';
-      subs.innerHTML = `<em>🔄 تعویضی‌ها:</em> ${ t.subs.map(x=>escapeHtml(x.name)).join(' ، ') }`;
-      card.appendChild(subs);
-    }
-    teamsArea.appendChild(card);
+  const team0 = (obj && obj.team0) || {members:[], subs:[]};
+  const team1 = (obj && obj.team1) || {members:[], subs:[]};
+  const title0 = `<div class="team-title"><span style="font-size:18px; color:var(--accent1)">🔵</span> <div>تیم 1 — ${team0.members.length} نفر</div></div>`;
+  const title1 = `<div class="team-title"><span style="font-size:18px; color:var(--accent3)">🟢</span> <div>تیم 2 — ${team1.members.length} نفر</div></div>`;
+  const card0 = document.createElement('div'); card0.className='team-card'; card0.innerHTML = title0;
+  if (team0.members.length === 0) card0.innerHTML += `<div style="margin-top:8px"><em>— خالی</em></div>`;
+  else {
+    for (const m of team0.members) card0.innerHTML += `<div style="margin-top:6px">${m.role==='gk'?'🧤':'⚽'} &nbsp; <strong>${escapeHtml(m.name)}</strong></div>`;
   }
+  if (team0.subs && team0.subs.length) card0.innerHTML += `<div class="subs"><em>🔄 تعویضی‌ها:</em> ${team0.subs.map(s=>escapeHtml(s.name)).join(' ، ')}</div>`;
+  teamsArea.appendChild(card0);
+
+  const card1 = document.createElement('div'); card1.className='team-card'; card1.innerHTML = title1;
+  if (team1.members.length === 0) card1.innerHTML += `<div style="margin-top:8px"><em>— خالی</em></div>`;
+  else {
+    for (const m of team1.members) card1.innerHTML += `<div style="margin-top:6px">${m.role==='gk'?'🧤':'⚽'} &nbsp; <strong>${escapeHtml(m.name)}</strong></div>`;
+  }
+  if (team1.subs && team1.subs.length) card1.innerHTML += `<div class="subs"><em>🔄 تعویضی‌ها:</em> ${team1.subs.map(s=>escapeHtml(s.name)).join(' ، ')}</div>`;
+  teamsArea.appendChild(card1);
 }
 
-// helper escape
+// escape
 function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// show confirmation big card
+// confirmation popup
 function showConfirmation(name, role){
   const modal = document.createElement('div'); modal.className='modal';
   const card = document.createElement('div'); card.className='modal-card';
-  const icon = document.createElement('div'); icon.className='spin-ball'; icon.innerHTML = `<div style="width:64px;height:64px;border-radius:8px;background:linear-gradient(90deg,#fff,#eee);display:flex;align-items:center;justify-content:center;color:#002;font-weight:800">✅</div>`;
-  const text = document.createElement('div'); text.style.marginTop='8px'; text.innerHTML = `<strong>درخواست شما ثبت شد</strong><div style="margin-top:8px">${escapeHtml(name)} — ${role==='gk' ? '🥅 دروازه‌بان' : '⚽ بازیکن'}</div>`;
-  card.appendChild(icon); card.appendChild(text);
+  card.innerHTML = `<div style="font-size:32px;margin-bottom:8px">✅</div><div style="font-weight:800">${escapeHtml(name)} — ${role==='gk'?'دروازه‌بان':'بازیکن'}</div><div class="small" style="margin-top:8px">درخواست شما ثبت شد</div>`;
   modal.appendChild(card); document.body.appendChild(modal);
-  setTimeout(()=>{ modal.remove(); }, 1600);
+  setTimeout(()=> modal.remove(), 1600);
 }
 
-// core: recompute teams automatically based on all participants
+// recompute teams (core algorithm)
 async function recomputeTeams(){
   try {
     const participants = (await participantsRef.once('value')).val() || {};
     const list = Object.values(participants);
-    // always 2 teams
     const teamsCount = 2;
-    // separate gks and players
     const gks = list.filter(x=>x.role==='gk');
     const players = list.filter(x=>x.role!=='gk');
-    // shuffle both lists
     shuffleArray(gks); shuffleArray(players);
-    // prepare teams
-    const teams = Array.from({length:teamsCount}, ()=>({ members: [], subs: [] }));
-    // assign gks to teams if available; if not enough, leave empty
-    for(let i=0;i<teamsCount;i++){
-      if(gks[i]) teams[i].members.push({ id: gks[i].clientId, name: gks[i].name, role:'gk' });
-      // else leave empty slot (no gk)
+    const teams = Array.from({length:teamsCount}, ()=>({members:[], subs:[]}));
+    // assign GK
+    for (let i=0;i<teamsCount;i++){
+      if (gks[i]) teams[i].members.push({id: gks[i].clientId, name: gks[i].name, role:'gk'});
     }
-    // assign players round-robin while respecting max 5 per team (including GK)
+    // assign players round-robin while respecting max 5
     let idx = 0;
-    for(const p of players){
+    for (const p of players) {
       let placed = false;
-      for(let attempt=0; attempt<teamsCount; attempt++){
+      for (let attempt=0; attempt<teamsCount; attempt++){
         const tIdx = (idx + attempt) % teamsCount;
-        const currentCount = teams[tIdx].members.length;
-        if(currentCount < 5){
-          teams[tIdx].members.push({ id: p.clientId, name: p.name, role:'player' });
+        if (teams[tIdx].members.length < 5) {
+          teams[tIdx].members.push({id: p.clientId, name: p.name, role:'player'});
           placed = true; idx = tIdx + 1; break;
         }
       }
-      if(!placed){
-        // all teams full -> put into subs with smallest subs
+      if (!placed) {
+        // push to smallest subs
         let minSubs = Infinity, pick = 0;
-        for(let j=0;j<teamsCount;j++){
-          if(teams[j].subs.length < minSubs){ minSubs = teams[j].subs.length; pick = j; }
+        for (let j=0;j<teamsCount;j++){
+          if (teams[j].subs.length < minSubs){ minSubs = teams[j].subs.length; pick = j; }
         }
-        teams[pick].subs.push({ id: p.clientId, name: p.name, role:'player' });
+        teams[pick].subs.push({id: p.clientId, name: p.name, role:'player'});
       }
       idx++;
     }
-    // balance attempt (should usually be balanced already)
-    // write to DB (atomic overwrite)
+    // small balancing attempt (rare)
     const out = { team0: teams[0], team1: teams[1] };
     await teamsRef.set(out);
-    // also save settings meta
-    await settingsRef.update({ teamsCount: teamsCount, lastUpdated: Date.now() });
+    await settingsRef.update({ teamsCount, lastUpdated: Date.now() });
   } catch(err) {
-    console.error('recomputeTeams error', err);
+    console.error('recomputeTeams err', err);
   }
 }
 
-// initial: ensure settings default
+forceRecompute.addEventListener('click', ()=> { recomputeTeams().catch(e=>console.error(e)); });
+
+// initial defaults
 (async ()=>{
-  const s = (await settingsRef.once('value')).val();
-  if(!s) settingsRef.set({ teamsCount: 2, signupOpen: true, assigned: false });
+  try {
+    const s = (await settingsRef.once('value')).val();
+    if (!s) await settingsRef.set({ teamsCount: 2, signupOpen: true, assigned: false });
+  } catch(e) { console.error('init settings err', e); }
 })();
+
 </script>
 </body>
 </html>

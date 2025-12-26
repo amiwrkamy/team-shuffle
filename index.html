@@ -42,19 +42,42 @@ body{
   max-width:420px;
   background:linear-gradient(145deg,#0f2a44,#08131f);
   border-radius:20px;
-  padding:15px;
+  padding:12px;
   box-shadow:0 0 30px rgba(0,0,0,.7);
   display:none;
+  position:relative;
 }
 
-h2{text-align:center;margin:5px 0 10px}
+/* ادمین مخفی */
+#adminMini{
+  position:absolute;
+  top:6px;
+  right:8px;
+  display:flex;
+  gap:6px;
+}
+.adminBtn{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  border:none;
+  background:linear-gradient(145deg,#ffd700,#ffae00);
+  color:#000;
+  font-size:14px;
+  cursor:pointer;
+  opacity:.6;
+}
+.adminBtn:hover{opacity:1}
+
+/* مراحل */
+h2{text-align:center;margin:8px 0 10px;font-size:17px}
 
 input{
   width:100%;
   padding:12px;
   border-radius:12px;
   border:none;
-  font-size:16px;
+  font-size:15px;
   margin-bottom:10px;
 }
 
@@ -64,7 +87,7 @@ input{
   margin:6px 0;
   border:none;
   border-radius:14px;
-  font-size:16px;
+  font-size:15px;
   cursor:pointer;
   color:#fff;
 }
@@ -74,11 +97,6 @@ input{
 .submit{
   background:linear-gradient(145deg,#00ffcc,#0099ff);
   font-weight:bold;
-}
-
-.admin{
-  background:linear-gradient(145deg,#ffd700,#ffae00);
-  color:#000;
 }
 
 .hidden{display:none}
@@ -93,21 +111,18 @@ input{
   flex:1;
   background:rgba(0,0,0,.4);
   border-radius:12px;
-  padding:8px;
+  padding:6px;
 }
-.team h3{text-align:center;margin:4px 0;font-size:15px}
+.team h3{text-align:center;margin:4px 0;font-size:14px}
 ul{padding:0;margin:0;list-style:none}
 li{
-  font-size:14px;
+  font-size:13px;
   padding:2px 0;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 .sub{color:#ffd166}
-
-/* ادمین */
-#adminPanel{margin-top:10px}
 </style>
 </head>
 
@@ -116,6 +131,12 @@ li{
 <div id="loader"><div id="ball">⚽</div></div>
 
 <div id="app">
+
+  <!-- ادمین خیلی مخفی -->
+  <div id="adminMini">
+    <button class="adminBtn" onclick="adminAction('mix')">🔀</button>
+    <button class="adminBtn" onclick="adminAction('reset')">♻️</button>
+  </div>
 
   <!-- مرحله ۱ -->
   <div id="step1">
@@ -146,18 +167,12 @@ li{
     </div>
   </div>
 
-  <!-- ادمین -->
-  <div id="adminPanel">
-    <button class="btn admin" onclick="adminAction('mix')">قاطی کردن</button>
-    <button class="btn admin" onclick="adminAction('reset')">ریست</button>
-  </div>
-
 </div>
 
 <script>
 setTimeout(()=>{
-  document.getElementById('loader').style.display='none'
-  document.getElementById('app').style.display='block'
+  loader.style.display='none'
+  app.style.display='block'
   loadTeams()
 },500)
 
@@ -165,19 +180,13 @@ const key="randomTeamData"
 const used="registeredOnce"
 
 function data(){
-  return JSON.parse(localStorage.getItem(key)) || {
-    A:[],B:[],A_sub:[],B_sub:[]
-  }
+  return JSON.parse(localStorage.getItem(key)) || {A:[],B:[],A_sub:[],B_sub:[]}
 }
-
 function save(d){localStorage.setItem(key,JSON.stringify(d))}
 
 function goStep2(){
   if(!nameInput.value.trim())return
-  if(localStorage.getItem(used)){
-    showTeams()
-    return
-  }
+  if(localStorage.getItem(used)){showTeams();return}
   step1.classList.add('hidden')
   step2.classList.remove('hidden')
 }
@@ -185,24 +194,18 @@ function goStep2(){
 function register(role){
   const name=nameInput.value.trim()
   if(!name)return
-
   let d=data()
-  let teams=['A','B']
-  teams.sort(()=>Math.random()-.5)
-
+  let teams=['A','B'].sort(()=>Math.random()-.5)
   let placed=false
+
   for(let t of teams){
     if(d[t].length<5){
       if(role==='gk' && d[t].some(x=>x.role==='gk'))continue
-      d[t].push({name,role})
-      placed=true
-      break
+      d[t].push({name,role});placed=true;break
     }
   }
-
   if(!placed){
-    let s=teams[Math.floor(Math.random()*2)]+"_sub"
-    d[s].push({name,role})
+    d[teams[Math.floor(Math.random()*2)]+"_sub"].push({name,role})
   }
 
   save(d)
@@ -237,21 +240,12 @@ function loadTeams(){
 function adminAction(type){
   let pass=prompt("رمز ادمین:")
   if(pass!=="admin12345")return
-
-  if(type==='reset'){
-    localStorage.clear()
-    location.reload()
-  }
+  if(type==='reset'){localStorage.clear();location.reload()}
   if(type==='mix'){
     let all=[]
-    let d=data()
-    Object.values(d).flat().forEach(x=>all.push(x))
-    localStorage.removeItem(key)
-    localStorage.removeItem(used)
-    all.forEach(p=>{
-      nameInput.value=p.name
-      register(p.role)
-    })
+    Object.values(data()).flat().forEach(x=>all.push(x))
+    localStorage.clear()
+    all.forEach(p=>{nameInput.value=p.name;register(p.role)})
   }
 }
 </script>

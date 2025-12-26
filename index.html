@@ -1,57 +1,69 @@
 <!doctype html>
 <html lang="fa">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Random Team</title>
 
 <style>
 :root{
-  --bg:#0b1226;
-  --blue:#3b82f6;
-  --red:#ef4444;
+  --bg1:#0f172a;
+  --bg2:#020617;
+  --blue:#2563eb;
+  --red:#dc2626;
   --green:#22c55e;
   --cyan:#06b6d4;
   --gold:#facc15;
-  --text:#eaf2ff;
+  --text:#e5f0ff;
 }
 
 *{box-sizing:border-box}
 body{
   margin:0;
+  min-height:100vh;
   background:
-    radial-gradient(600px 300px at 10% 10%, rgba(59,130,246,.18), transparent),
-    radial-gradient(600px 300px at 90% 90%, rgba(34,197,94,.15), transparent),
-    var(--bg);
-  font-family: Tahoma, sans-serif;
+    radial-gradient(700px 300px at 20% 10%, rgba(37,99,235,.25), transparent),
+    radial-gradient(700px 300px at 80% 90%, rgba(34,197,94,.2), transparent),
+    linear-gradient(180deg,var(--bg1),var(--bg2));
+  font-family:tahoma,sans-serif;
   color:var(--text);
 }
 
 #splash{
   position:fixed;inset:0;
   display:flex;align-items:center;justify-content:center;
-  z-index:99;
+  background:transparent;
+  z-index:100;
 }
 #splash span{
   font-size:90px;
   animation:spin .5s ease-out forwards;
 }
 @keyframes spin{
-  to{transform:rotate(360deg);opacity:0}
+  to{transform:rotate(360deg) scale(.2);opacity:0}
 }
 
-.app{display:flex;justify-content:center;padding:12px}
+.app{
+  display:flex;
+  justify-content:center;
+  padding:12px;
+}
 
 .panel{
   width:100%;
   max-width:900px;
-  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.4));
-  border-radius:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.5));
+  border-radius:20px;
   padding:14px;
-  box-shadow:0 25px 60px rgba(0,0,0,.7);
+  box-shadow:0 30px 80px rgba(0,0,0,.8);
 }
 
-h1{text-align:center;margin:6px 0 12px;font-size:22px}
+h1{
+  text-align:center;
+  margin:6px 0 10px;
+  font-size:20px;
+  letter-spacing:1px;
+}
 
 .step{display:none}
 .step.active{display:block}
@@ -59,72 +71,79 @@ h1{text-align:center;margin:6px 0 12px;font-size:22px}
 input{
   width:100%;
   padding:14px;
-  border-radius:12px;
+  border-radius:14px;
   border:none;
-  background:rgba(255,255,255,.1);
+  background:rgba(255,255,255,.12);
   color:white;
   font-size:15px;
 }
 
-.big-btn{
+.btn{
   width:100%;
-  margin-top:10px;
+  margin-top:12px;
   padding:14px;
   border:none;
-  border-radius:14px;
+  border-radius:16px;
   font-size:16px;
   font-weight:900;
   cursor:pointer;
+  box-shadow:0 6px 0 rgba(0,0,0,.4);
 }
 
 .next{
   background:linear-gradient(145deg,var(--green),var(--cyan));
   color:#022;
-  box-shadow:0 6px 0 #0f766e;
 }
 
 .roles{
   display:flex;
-  gap:10px;
-  margin-top:10px;
+  gap:12px;
+  margin-top:12px;
 }
 
 .role{
   flex:1;
-  padding:16px;
-  border-radius:14px;
+  padding:18px;
+  border-radius:18px;
   text-align:center;
   font-size:16px;
   font-weight:900;
   cursor:pointer;
-  opacity:.75;
+  opacity:.7;
 }
 
-.role.player{background:var(--blue)}
-.role.gk{background:var(--red)}
-.role.active{opacity:1;box-shadow:0 0 20px rgba(255,255,255,.35)}
+.role.player{background:linear-gradient(145deg,#3b82f6,#1d4ed8)}
+.role.gk{background:linear-gradient(145deg,#ef4444,#b91c1c)}
+.role.active{
+  opacity:1;
+  box-shadow:0 0 25px rgba(255,255,255,.4);
+}
 
 .teams{
   display:flex;
-  gap:10px;
+  gap:12px;
   margin-top:14px;
 }
 
 .team{
   flex:1;
-  background:rgba(255,255,255,.06);
-  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  border-radius:16px;
   padding:10px;
 }
 
-.team h3{text-align:center;margin:4px 0;font-size:14px}
+.team h3{
+  text-align:center;
+  margin:4px 0 6px;
+  font-size:14px;
+}
 
 ul{list-style:none;padding:0;margin:0}
 li{
-  background:rgba(0,0,0,.35);
+  background:rgba(0,0,0,.45);
   margin:5px 0;
-  padding:7px 9px;
-  border-radius:9px;
+  padding:7px 10px;
+  border-radius:10px;
   font-size:13px;
   white-space:nowrap;
   overflow:hidden;
@@ -132,16 +151,16 @@ li{
 }
 
 .admin{
-  margin-top:10px;
+  margin-top:12px;
   display:flex;
-  gap:8px;
+  gap:10px;
 }
 
 .admin button{
   flex:1;
   background:linear-gradient(145deg,var(--gold),#fde047);
   border:none;
-  border-radius:12px;
+  border-radius:14px;
   padding:12px;
   font-weight:900;
   cursor:pointer;
@@ -159,9 +178,9 @@ li{
 <h1>Random Team</h1>
 
 <!-- STEP 1 -->
-<div class="step active" id="step1">
-  <input id="name" placeholder="اسم و فامیلی"/>
-  <button class="big-btn next" onclick="goStep(2)">ادامه</button>
+<div class="step" id="step1">
+  <input id="name" placeholder="اسم و فامیلی">
+  <button class="btn next" onclick="goStep2()">ادامه</button>
 </div>
 
 <!-- STEP 2 -->
@@ -170,7 +189,7 @@ li{
     <div class="role player" onclick="selectRole('player')">⚽ بازیکن</div>
     <div class="role gk" onclick="selectRole('gk')">🧤 دروازه‌بان</div>
   </div>
-  <button class="big-btn next" onclick="register()">ثبت نهایی</button>
+  <button class="btn next" onclick="register()">ثبت نهایی</button>
 </div>
 
 <!-- TEAMS -->
@@ -196,18 +215,32 @@ li{
 <script>
 setTimeout(()=>document.getElementById('splash').remove(),600);
 
-const KEY="RANDOM_TEAM_FINAL";
-const DEV="DEV_ID";
+const KEY="RANDOM_TEAM_STATE";
+const DEV="RANDOM_TEAM_DEV";
 const ADMIN="admin12345";
 
-let step=1, role=null;
+let role=null;
 let state=JSON.parse(localStorage.getItem(KEY)||'[]');
 
-function goStep(n){
-  const name=document.getElementById('name').value.trim();
-  if(n===2 && !name) return;
+function dev(){
+  let d=localStorage.getItem(DEV);
+  if(!d){d=Math.random().toString(36);localStorage.setItem(DEV,d)}
+  return d;
+}
+
+function alreadyRegistered(){
+  return state.some(x=>x.dev===dev());
+}
+
+function goStep2(){
+  if(!name.value.trim()) return;
+  showStep(2);
+}
+
+function showStep(n){
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
-  document.getElementById('step'+n).classList.add('active');
+  const el=document.getElementById('step'+n);
+  if(el) el.classList.add('active');
 }
 
 function selectRole(r){
@@ -216,29 +249,36 @@ function selectRole(r){
   document.querySelector('.'+r).classList.add('active');
 }
 
-function dev(){
-  let d=localStorage.getItem(DEV);
-  if(!d){d=Math.random().toString(36);localStorage.setItem(DEV,d)}
-  return d;
+function register(){
+  if(!role) return;
+  if(alreadyRegistered()) return;
+
+  state.push({
+    name:name.value.trim(),
+    role,
+    dev:dev()
+  });
+  localStorage.setItem(KEY,JSON.stringify(state));
+  hideSteps();
+  render();
 }
 
-function register(){
-  if(state.find(x=>x.dev===dev())) return alert('قبلاً ثبت شدی');
-  if(!role) return;
-  state.push({name:document.getElementById('name').value,role,dev:dev()});
-  localStorage.setItem(KEY,JSON.stringify(state));
-  document.getElementById('step2').style.display='none';
-  render();
+function hideSteps(){
+  document.querySelectorAll('.step').forEach(s=>s.style.display='none');
 }
 
 function resetAll(){
   if(prompt('رمز ادمین')!==ADMIN) return;
-  localStorage.clear();state=[];render();
+  localStorage.clear();
+  state=[];
+  location.reload();
 }
 
 function shuffle(){
   if(prompt('رمز ادمین')!==ADMIN) return;
-  state.sort(()=>Math.random()-.5);render();
+  state.sort(()=>Math.random()-.5);
+  localStorage.setItem(KEY,JSON.stringify(state));
+  render();
 }
 
 function render(){
@@ -249,6 +289,13 @@ function render(){
     (i%2?B:A).appendChild(li);
   });
 }
+
+if(alreadyRegistered()){
+  hideSteps();
+}else{
+  showStep(1);
+}
+
 render();
 </script>
 

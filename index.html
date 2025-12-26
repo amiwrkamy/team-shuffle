@@ -1,171 +1,381 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team Picker</title>
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Team Shuffle — تیم‌چینی</title>
 <style>
-*{box-sizing:border-box;font-family:tahoma}
-body{margin:0;color:#fff;background:#0b3d1c}
-
-/* fallback background */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:url("https://i.imgur.com/6IUbEME.jpg") center/cover no-repeat;
-  z-index:-3;
-}
-
-/* video */
-.video-bg{
-  position:fixed;
-  inset:0;
-  z-index:-2;
-}
-.video-bg video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-/* overlay */
-.overlay{
-  min-height:100vh;
-  background:rgba(0,0,0,.45);
-  padding:20px;
-}
-
-/* intro */
-#intro{
-  position:fixed;
-  inset:0;
-  background:#000;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:10;
-}
-.ball{
-  font-size:120px;
-  animation:zoom 1.8s ease forwards;
-}
-@keyframes zoom{
-  from{transform:scale(3)}
-  to{transform:scale(.5);opacity:0}
-}
-
-/* card */
-.card{
-  max-width:420px;
-  margin:20px auto;
-  background:rgba(0,0,0,.6);
-  border-radius:16px;
-  padding:16px;
-}
-
-/* inputs */
-input,button{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:none;
-  margin-top:8px;
-  font-size:14px;
-}
-button{
-  background:linear-gradient(45deg,#ffd700,#ff9800);
-  cursor:pointer;
-}
-
-/* teams */
-.teams{display:flex;gap:10px;margin-top:20px}
-.team{
-  flex:1;
-  background:rgba(0,0,0,.55);
-  border-radius:12px;
-  padding:10px;
-}
-.member{
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  font-size:13px;
-}
+  :root{
+    --bg1:#071033; --accent1:#4fc3f7; --accent2:#0b63b9; --accent3:#ffd54f; --danger:#ff6b6b;
+    --card: rgba(255,255,255,0.04);
+    --muted: rgba(255,255,255,0.6);
+  }
+  *{box-sizing:border-box;font-family: Vazirmatn, Tahoma, sans-serif}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),#021025);color:#fff}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+  .app{width:100%;max-width:980px}
+  .card{background:var(--card);border-radius:14px;padding:16px;box-shadow:0 18px 60px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.02)}
+  .top{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:10px}
+  .brand{font-weight:800;color:var(--accent3)} 
+  .hint{color:var(--muted);font-size:13px}
+  /* Splash small (0.5s) */
+  .splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:40;background:linear-gradient(180deg,#0008,#0008)}
+  .emoji{font-size:120px; animation:ball-in .5s ease forwards}
+  @keyframes ball-in{0%{transform:translateX(-120%) scale(1.8);opacity:0}60%{transform:translateX(20%) scale(.9);opacity:1}100%{transform:translateX(0) scale(1);opacity:1}}
+  /* layout */
+  .grid{display:grid;grid-template-columns:1fr 420px;gap:12px}
+  @media (max-width:940px){ .grid{grid-template-columns:1fr} }
+  .panel{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  input[type="text"]{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.03);color:#fff;font-size:14px}
+  .roles{display:flex;gap:8px;margin-top:8px}
+  .role{flex:1;padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(0,0,0,0.06));text-align:center;cursor:pointer;font-weight:700}
+  .role.active{outline:3px solid rgba(255,255,255,0.06)}
+  .btn{width:100%;padding:10px;border-radius:10px;border:none;font-weight:800;cursor:pointer;margin-top:10px}
+  .btn.primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#001}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  .btn.danger{background:linear-gradient(90deg,var(--danger),#ff3);color:#001}
+  /* teams */
+  .teams{display:flex;gap:10px;margin-top:12px}
+  .team{flex:1;background:rgba(0,0,0,0.45);border-radius:10px;padding:10px}
+  .team h4{margin:0 0 8px;color:var(--accent3);font-size:14px}
+  ul{margin:0;padding:0;list-style:none}
+  li{padding:8px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.02);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .subtle{font-size:12px;color:var(--muted);margin-top:6px}
+  /* footer small */
+  .controls{display:flex;gap:8px;margin-top:12px}
+  .small{font-size:12px;color:var(--muted)}
 </style>
 </head>
-
 <body>
 
-<div id="intro"><div class="ball">⚽</div></div>
-
-<div class="video-bg">
-  <video muted loop playsinline id="bgVideo">
-    <source src="VN20251226_133742.mp4" type="video/mp4">
-  </video>
+<!-- splash: 0.5s -->
+<div id="splash" class="splash">
+  <div class="emoji">⚽➡️🥅</div>
 </div>
 
-<div class="overlay">
+<div class="wrap">
+  <div class="app">
+    <div class="card">
+      <div class="top">
+        <div>
+          <div class="brand">Team Shuffle</div>
+          <div class="hint">اینجا تیم‌ها به‌صورت کاملاً شانسی ساخته می‌شوند</div>
+        </div>
+        <div class="small">دو تیم — ثبت یک‌بار در هر دستگاه</div>
+      </div>
 
-<div class="card" id="step1">
-  <input id="nameInput" placeholder="نام">
-  <button onclick="next()">ادامه</button>
-</div>
+      <div class="grid">
+        <!-- left: register -->
+        <div class="panel">
+          <label for="name">اسم خود را وارد کن</label>
+          <input id="name" type="text" placeholder="مثال: علی رضایی" maxlength="40" />
+          
+          <div style="height:8px"></div>
+          <label class="small">نقش</label>
+          <div class="roles">
+            <div id="rolePlayer" class="role" data-role="player">⚽ بازیکن</div>
+            <div id="roleGk" class="role" data-role="gk">🧤 دروازه‌بان</div>
+          </div>
 
-<div class="card" id="step2" style="display:none">
-  <button onclick="join('player')">⚽ بازیکن</button>
-  <button onclick="join('gk')">🧤 دروازه‌بان</button>
-</div>
+          <button id="btnRegister" class="btn primary">ثبت و رفتن به تیم</button>
 
-<div class="teams">
-  <div class="team"><b>Team A</b><div id="A"></div><b>Subs</b><div id="As"></div></div>
-  <div class="team"><b>Team B</b><div id="B"></div><b>Subs</b><div id="Bs"></div></div>
-</div>
+          <div class="controls">
+            <button id="btnShuffle" class="btn ghost">🔀 قاطی کن (Shuffle)</button>
+            <button id="btnReset" class="btn danger">🔐 ریست (ادمین)</button>
+          </div>
 
+          <div class="subtle" style="margin-top:10px">
+            هر دستگاه فقط یک‌بار می‌تواند ثبت کند. برای ریست رمز admin12345 لازم است.
+          </div>
+        </div>
+
+        <!-- right: teams -->
+        <div>
+          <div class="panel">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div style="font-weight:800;color:var(--accent1)">تیم‌ها (زنده)</div>
+              <div id="count" class="small">0 نفر</div>
+            </div>
+
+            <div class="teams" style="margin-top:10px">
+              <div class="team">
+                <h4>🔵 تیم A</h4>
+                <ul id="teamA"></ul>
+                <div class="subtle">تعویضی‌های A</div>
+                <ul id="subsA"></ul>
+              </div>
+
+              <div class="team">
+                <h4>🔴 تیم B</h4>
+                <ul id="teamB"></ul>
+                <div class="subtle">تعویضی‌های B</div>
+                <ul id="subsB"></ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script>
-/* intro remove */
-setTimeout(()=>document.getElementById("intro").remove(),1800);
+/* ======= SETTINGS ======= */
+const ADMIN_PASS = 'admin12345';
+const STORAGE_KEY = 'ts_v4';   // data stored locally
+const DEVICE_KEY = 'ts_dev_v4'; // device id (to prevent multi registrations)
 
-/* video safe play */
-const v=document.getElementById("bgVideo");
-v.play().catch(()=>console.log("autoplay blocked"));
-
-let data=JSON.parse(localStorage.getItem("data"))||{A:[],B:[],As:[],Bs:[],u:[]};
-
-function next(){
-  if(!nameInput.value.trim())return alert("اسم");
-  if(localStorage.joined)return alert("قبلاً ثبت شدی");
-  step1.style.display="none";step2.style.display="block";
-}
-
-function join(role){
-  let n=nameInput.value.trim();
-  let t=Math.random()<.5?"A":"B";
-  if(role==="gk"){
-    if(data.A.some(x=>x.r==="gk"))t="B";
-    if(data.B.some(x=>x.r==="gk"))t="A";
+/* ======= utility ======= */
+function idForDevice(){
+  let id = localStorage.getItem(DEVICE_KEY);
+  if(!id){
+    id = Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+    localStorage.setItem(DEVICE_KEY, id);
   }
-  let arr=data[t];
-  if(arr.length<5)arr.push({n,r:role});
-  else data[t+"s"].push({n});
-  data.u.push(n);
-  localStorage.setItem("data",JSON.stringify(data));
-  localStorage.joined=1;
-  render();
-  alert("ثبت شد");
-  step2.style.display="none";
+  return id;
+}
+const DEVICE_ID = idForDevice();
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : { players: [], teamsCount: 2 };
+  }catch(e){ return { players: [], teamsCount:2 }; }
+}
+function saveData(d){ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+
+/* ======= initial data ======= */
+let state = loadData(); // { players:[{id,name,role,device}], teamsCount:2 }
+
+/* ======= DOM refs ======= */
+const el = {
+  name: document.getElementById('name'),
+  rolePlayer: document.getElementById('rolePlayer'),
+  roleGk: document.getElementById('roleGk'),
+  btnRegister: document.getElementById('btnRegister'),
+  btnReset: document.getElementById('btnReset'),
+  btnShuffle: document.getElementById('btnShuffle'),
+  teamA: document.getElementById('teamA'),
+  teamB: document.getElementById('teamB'),
+  subsA: document.getElementById('subsA'),
+  subsB: document.getElementById('subsB'),
+  count: document.getElementById('count'),
+  splash: document.getElementById('splash')
+};
+
+/* ======= UI behavior ======= */
+let selectedRole = null;
+el.rolePlayer.addEventListener('click', ()=>{ selectRole('player'); });
+el.roleGk.addEventListener('click', ()=>{ selectRole('gk'); });
+
+function selectRole(r){
+  selectedRole = r;
+  el.rolePlayer.classList.toggle('active', r==='player');
+  el.roleGk.classList.toggle('active', r==='gk');
 }
 
-function render(){
-  A.innerHTML=data.A.map(x=>`<div class=member>${x.r==="gk"?"🧤":"⚽"} ${x.n}</div>`).join("");
-  B.innerHTML=data.B.map(x=>`<div class=member>${x.r==="gk"?"🧤":"⚽"} ${x.n}</div>`).join("");
-  As.innerHTML=data.As.map(x=>`<div class=member>${x.n}</div>`).join("");
-  Bs.innerHTML=data.Bs.map(x=>`<div class=member>${x.n}</div>`).join("");
+/* ======= core: assign player to team respecting rules ======= */
+function assignPlayer(player){
+  // Two teams only (A,B)
+  // Max 5 per team including GK. If more -> goes to subs of A or B (balance)
+  // Each team max 1 GK. If registering GK and both teams have GK -> reject.
+
+  const teams = { A:[], B:[] };
+  const subs = { A:[], B:[] };
+  // reconstruct current distribution
+  for(const p of state.players){
+    if(p.team){
+      if(p.sub) subs[p.team].push(p);
+      else teams[p.team].push(p);
+    }
+  }
+
+  // check GK constraint if player.role === 'gk'
+  if(player.role === 'gk'){
+    const hasA = teams.A.some(x=>x.role==='gk');
+    const hasB = teams.B.some(x=>x.role==='gk');
+    if(hasA && hasB){
+      return { ok:false, reason:'gk_full' };
+    }
+    // pick a team that doesn't have GK and has fewer members (<5) if possible
+    let candidates = [];
+    if(!hasA && teams.A.length < 5) candidates.push('A');
+    if(!hasB && teams.B.length < 5) candidates.push('B');
+    if(candidates.length === 0){
+      // maybe one team has space though has no GK? fallback: if a team doesn't have GK but has 5 members -> still can push GK? but rule says max5 incl GK, so cannot
+      return { ok:false, reason:'gk_no_space' };
+    }
+    const pick = candidates[Math.floor(Math.random()*candidates.length)];
+    player.team = pick;
+    player.sub = false;
+    return { ok:true, team: pick, as:'main' };
+  }
+
+  // role player => find teams with <5 members (main)
+  const aMainCount = teams.A.length;
+  const bMainCount = teams.B.length;
+  let mainCandidates = [];
+  if(aMainCount < 5) mainCandidates.push('A');
+  if(bMainCount < 5) mainCandidates.push('B');
+  if(mainCandidates.length > 0){
+    // choose uniformly among teams that have minimal main count to keep balance
+    const minMain = Math.min(aMainCount, bMainCount);
+    const balanced = mainCandidates.filter(t => (t==='A'?aMainCount:bMainCount)===minMain);
+    const pick = balanced[Math.floor(Math.random()*balanced.length)];
+    player.team = pick; player.sub = false;
+    return { ok:true, team: pick, as:'main' };
+  }
+  // all mains full => put into subs in smaller subs length
+  const sa = subs.A.length; const sb = subs.B.length;
+  const pick = sa <= sb ? 'A' : 'B';
+  player.team = pick; player.sub = true;
+  return { ok:true, team: pick, as:'sub' };
 }
-render();
+
+/* ======= register flow ======= */
+el.btnRegister.addEventListener('click', ()=>{
+  const name = (el.name.value || '').trim();
+  if(!name){ alert('نام معتبر وارد کن'); return; }
+  if(!selectedRole){ alert('نقش را انتخاب کن'); return; }
+
+  // check device already used
+  if(state.players.some(p=>p.device === DEVICE_ID)){
+    alert('این دستگاه قبلاً ثبت کرده است');
+    return;
+  }
+
+  // create player object
+  const player = { id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), name, role:selectedRole, device: DEVICE_ID };
+
+  const res = assignPlayer(player);
+  if(!res.ok){
+    if(res.reason === 'gk_full') { alert('دروازه‌بان هر دو تیم پر است'); return; }
+    if(res.reason === 'gk_no_space') { alert('جای خالی برای دروازه‌بان وجود ندارد'); return; }
+    alert('امکان ثبت نیست'); return;
+  }
+
+  // add to state.players
+  state.players.push(player);
+  saveData(state);
+  renderAll();
+  alert('ثبت شد ✅');
+});
+
+/* ======= shuffle (mix) ======= */
+el.btnShuffle.addEventListener('click', ()=>{
+  if(!confirm('آیا می‌خواهی تیم‌ها دوباره شانسی بررسی شوند (تمام اعضا دوباره پخش می‌شوند)؟')) return;
+  // reshuffle algorithm: take all players, ensure gk count >= teamsCount (2) to allow one per team
+  const players = state.players.slice();
+  const gks = players.filter(p=>p.role==='gk');
+  if(gks.length < 2){
+    alert('برای قاطی‌کردن دوباره حداقل 2 دروازه‌بان لازم است');
+    return;
+  }
+  // shuffle gks and players
+  shuffleArray(gks);
+  const others = players.filter(p=>p.role!=='gk');
+  shuffleArray(others);
+
+  // clear current team assignments
+  for(const p of state.players){ delete p.team; delete p.sub; }
+
+  // assign GK one to each team
+  // pick first two GK randomly
+  const teams = ['A','B'];
+  for(let i=0;i<teams.length;i++){
+    const g = gks[i];
+    const idx = state.players.findIndex(x=>x.id===g.id);
+    if(idx>=0){ state.players[idx].team = teams[i]; state.players[idx].sub = false; }
+  }
+  // assign rest in round-robin main while respecting max5 then subs
+  let idxRR = 0;
+  for(const p of state.players.filter(x=>!x.team)){ // those not GK assigned
+    // attempt assign to team idxRR % 2 if main <5 else look other
+    const t0 = (idxRR%2===0) ? 'A' : 'B';
+    const t1 = t0==='A' ? 'B' : 'A';
+    const countMainT0 = state.players.filter(x=>x.team===t0 && !x.sub).length;
+    const countMainT1 = state.players.filter(x=>x.team===t1 && !x.sub).length;
+    if(countMainT0 < 5){
+      p.team = t0; p.sub = false;
+    } else if(countMainT1 < 5){
+      p.team = t1; p.sub = false;
+    } else {
+      // both full -> put in subs of smaller subs
+      const subsA = state.players.filter(x=>x.team==='A' && x.sub).length;
+      const subsB = state.players.filter(x=>x.team==='B' && x.sub).length;
+      p.team = (subsA <= subsB) ? 'A' : 'B'; p.sub = true;
+    }
+    idxRR++;
+  }
+  saveData(state);
+  renderAll();
+  alert('تیم‌ها دوباره به‌شکل شانسی چیده شدند');
+});
+
+/* ======= reset ======= */
+el.btnReset.addEventListener('click', ()=>{
+  const pass = prompt('رمز ادمین را وارد کنید:');
+  if(pass === null) return;
+  if(pass !== ADMIN_PASS){ alert('رمز اشتباه است'); return; }
+  if(!confirm('آیا مطمئنی همه چیز پاک شود؟')) return;
+  state = { players: [], teamsCount: 2 };
+  saveData(state);
+  // also remove device joined marker? keep device id but allow re-register after reset:
+  localStorage.removeItem(DEVICE_KEY); // remove so devices can re-register after admin reset
+  renderAll();
+  alert('پاک شد — اکنون می‌توانید دوباره تیم‌کشی انجام دهید');
+});
+
+/* ======= render ======= */
+function renderAll(){
+  // build teams from state.players (if some historic have no team, assign on the fly)
+  // first reset lists
+  el.teamA.innerHTML = ''; el.teamB.innerHTML = ''; el.subsA.innerHTML = ''; el.subsB.innerHTML = '';
+  // ensure each player has team/sub fields (in case older versions)
+  for(const p of state.players){
+    if(!p.team){
+      // try assign at load-time using same assign logic
+      const temp = assignPlayer({...p}); // returns info but does not mutate original passed p
+      p.team = temp.team; p.sub = temp.as==='sub';
+    }
+  }
+  // show counts
+  el.count.textContent = `${state.players.length} نفر`;
+
+  // build arrays for display
+  const A_main = state.players.filter(p => p.team==='A' && !p.sub);
+  const B_main = state.players.filter(p => p.team==='B' && !p.sub);
+  const A_subs = state.players.filter(p => p.team==='A' && p.sub);
+  const B_subs = state.players.filter(p => p.team==='B' && p.sub);
+
+  // render each as <li>
+  for(const p of A_main) el.teamA.insertAdjacentHTML('beforeend', `<li title="${escapeHtml(p.name)}">${p.role==='gk'?'🧤':'⚽'} ${escapeHtml(p.name)}</li>`);
+  for(const p of B_main) el.teamB.insertAdjacentHTML('beforeend', `<li title="${escapeHtml(p.name)}">${p.role==='gk'?'🧤':'⚽'} ${escapeHtml(p.name)}</li>`);
+  for(const p of A_subs) el.subsA.insertAdjacentHTML('beforeend', `<li title="${escapeHtml(p.name)}">🔁 ${escapeHtml(p.name)}</li>`);
+  for(const p of B_subs) el.subsB.insertAdjacentHTML('beforeend', `<li title="${escapeHtml(p.name)}">🔁 ${escapeHtml(p.name)}</li>`);
+}
+
+/* ======= helpers ======= */
+function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ======= startup ======= */
+// remove splash after 0.5s
+setTimeout(()=>{ const sp = document.getElementById('splash'); if(sp) sp.style.display='none'; }, 500);
+
+// render initial
+renderAll();
+
+/* ======= Note about multi-device visibility =======
+ This page stores data in localStorage of the visitor's browser.
+ => The list is preserved on each machine independently.
+ To make the same shared list visible to everyone (global), you need a small server/API.
+ I can provide a ready-to-run Node/Express + JSON file or a Firebase snippet if you want the global mode.
+*/
 </script>
 
 </body>

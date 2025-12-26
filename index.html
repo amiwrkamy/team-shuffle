@@ -1,258 +1,237 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Team Shuffle ⚽</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Football Team Picker</title>
 
 <style>
-*{box-sizing:border-box;font-family:Vazirmatn}
-html,body{margin:0;height:100%;color:#fff}
+*{box-sizing:border-box;font-family:tahoma}
+body{
+  margin:0;
+  color:#fff;
+  overflow-x:hidden;
+}
 
-/* 🎥 Video Background */
+/* ===== Video Background ===== */
 .video-bg{
   position:fixed;
   inset:0;
-  z-index:-2;
-  overflow:hidden;
+  z-index:-1;
 }
 .video-bg video{
   width:100%;
   height:100%;
   object-fit:cover;
-  filter:brightness(.85) saturate(1.1);
+  filter:brightness(0.7);
 }
 
-/* overlay */
+/* ===== Overlay ===== */
 .overlay{
+  min-height:100vh;
+  background:linear-gradient(
+    rgba(0,0,0,.4),
+    rgba(0,0,0,.6)
+  );
+  padding:20px;
+}
+
+/* ===== Intro Animation ===== */
+#intro{
   position:fixed;
   inset:0;
-  background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.55));
-  z-index:-1;
-}
-
-.app{
-  min-height:100vh;
+  background:#000;
   display:flex;
-  justify-content:center;
   align-items:center;
-  padding:16px;
+  justify-content:center;
+  z-index:10;
+}
+.ball{
+  font-size:120px;
+  animation:zoom 2s ease forwards;
+}
+@keyframes zoom{
+  0%{transform:scale(3)}
+  100%{transform:scale(1);opacity:0}
 }
 
+/* ===== Card ===== */
 .card{
-  width:100%;
-  max-width:900px;
-  background:rgba(0,0,0,.55);
-  border-radius:14px;
-  padding:16px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  max-width:420px;
+  margin:40px auto;
+  background:rgba(0,0,0,.6);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 0 30px rgba(255,215,0,.4);
 }
 
-h1{
-  font-size:18px;
-  margin:0 0 10px;
-  color:#ffd100;
-}
-
+/* ===== Inputs & Buttons ===== */
 input{
   width:100%;
-  padding:10px;
-  border-radius:8px;
+  padding:12px;
+  border-radius:10px;
   border:none;
-  font-size:13px;
+  font-size:15px;
 }
-
-.roles{
-  display:flex;
-  gap:8px;
-  margin:8px 0;
-}
-
-.role{
-  flex:1;
-  padding:8px;
-  border-radius:8px;
-  text-align:center;
-  cursor:pointer;
-  background:rgba(255,255,255,.08);
-  font-size:13px;
-}
-
-.role.active{
-  outline:2px solid #00d27a;
-}
-
 button{
   width:100%;
-  padding:10px;
+  padding:12px;
+  margin-top:10px;
   border:none;
   border-radius:10px;
-  font-weight:700;
+  font-size:15px;
   cursor:pointer;
-  background:linear-gradient(90deg,#ffd100,#00d27a);
   color:#000;
-  font-size:13px;
+  background:linear-gradient(45deg,#ffd700,#ff3);
+}
+button.secondary{
+  background:linear-gradient(45deg,#00c853,#64dd17);
+}
+button.danger{
+  background:linear-gradient(45deg,#ff5252,#ff1744);
+  color:#fff;
 }
 
+/* ===== Teams ===== */
 .teams{
-  display:grid;
-  grid-template-columns:1fr 1fr;
+  display:flex;
   gap:10px;
-  margin-top:12px;
+  margin-top:20px;
 }
-
 .team{
-  background:rgba(255,255,255,.08);
-  border-radius:10px;
-  padding:8px;
+  flex:1;
+  background:rgba(0,0,0,.55);
+  border-radius:12px;
+  padding:10px;
 }
-
 .team h3{
-  margin:0 0 6px;
-  font-size:14px;
-  color:#ffd100;
+  margin:0 0 5px;
+  text-align:center;
+  color:#ffd700;
 }
-
-ul{list-style:none;padding:0;margin:0}
-li{
-  font-size:12px;
-  padding:6px;
-  background:rgba(0,0,0,.35);
-  border-radius:6px;
-  margin-bottom:6px;
+.member{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  font-size:14px;
 }
 
-.subs-title{
-  font-size:11px;
-  margin-top:6px;
-  color:#9fdfff;
-}
-
-.reset{
-  margin-top:12px;
-  background:linear-gradient(90deg,#ff5252,#ffd100);
-}
-
-/* ⚽ Splash */
-.splash{
-  position:fixed;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#000;
-  z-index:10;
-  animation:fadeOut 1s ease forwards;
-  animation-delay:1.2s;
-}
-.splash span{
-  font-size:120px;
-  animation:ball 1s ease forwards;
-}
-@keyframes ball{
-  from{transform:scale(2)}
-  to{transform:scale(1)}
-}
-@keyframes fadeOut{
-  to{opacity:0;pointer-events:none}
+/* ===== Admin ===== */
+.admin{
+  margin-top:30px;
+  opacity:.8;
 }
 </style>
 </head>
 
 <body>
 
+<!-- Intro -->
+<div id="intro">
+  <div class="ball">⚽</div>
+</div>
+
+<!-- Video BG -->
 <div class="video-bg">
-  <video src="bg.mp4" autoplay muted loop playsinline></video>
-</div>
-<div class="overlay"></div>
-
-<div class="splash"><span>⚽</span></div>
-
-<div class="app">
-<div class="card">
-
-<h1>Team Shuffle</h1>
-
-<input id="name" placeholder="نام خود را وارد کنید">
-
-<div class="roles">
-  <div class="role" data-role="player">⚽ بازیکن</div>
-  <div class="role" data-role="gk">🧤 دروازه‌بان</div>
+  <video autoplay muted loop playsinline>
+    <source src="VN20251226_133742.mp4" type="video/mp4">
+  </video>
 </div>
 
-<button onclick="register()">ثبت</button>
+<div class="overlay">
 
-<div class="teams">
-  <div class="team">
-    <h3>🔵 تیم A</h3>
-    <ul id="teamA"></ul>
-    <div class="subs-title">تعویضی A</div>
-    <ul id="subsA"></ul>
+  <div class="card" id="step-name">
+    <input id="nameInput" placeholder="نام یا فامیلی (فارسی یا انگلیسی)">
+    <button onclick="goRole()">ادامه</button>
   </div>
-  <div class="team">
-    <h3>🔴 تیم B</h3>
-    <ul id="teamB"></ul>
-    <div class="subs-title">تعویضی B</div>
-    <ul id="subsB"></ul>
+
+  <div class="card" id="step-role" style="display:none">
+    <button class="secondary" onclick="register('player')">⚽ بازیکن</button>
+    <button class="secondary" onclick="register('gk')">🧤 دروازه‌بان</button>
   </div>
-</div>
 
-<button class="reset" onclick="resetAll()">🔐 ریست (ادمین)</button>
+  <div class="teams">
+    <div class="team">
+      <h3>تیم A</h3>
+      <div id="teamA"></div>
+      <h4>تعویضی</h4>
+      <div id="subA"></div>
+    </div>
+    <div class="team">
+      <h3>تیم B</h3>
+      <div id="teamB"></div>
+      <h4>تعویضی</h4>
+      <div id="subB"></div>
+    </div>
+  </div>
 
-</div>
+  <div class="card admin">
+    <input id="adminPass" placeholder="رمز ادمین">
+    <button class="danger" onclick="resetAll()">ریست کامل</button>
+  </div>
+
 </div>
 
 <script>
-const PASS="admin12345";
-const KEY="players_v3";
-const DEV="device_v3";
-if(!localStorage.getItem(DEV))
-  localStorage.setItem(DEV,Math.random().toString(36));
+/* ===== Data ===== */
+const ADMIN_PASS = "admin12345";
+let data = JSON.parse(localStorage.getItem("teamsData")) || {
+  teamA:[], teamB:[], subA:[], subB:[], users:[]
+};
 
-let role=null;
-document.querySelectorAll(".role").forEach(r=>{
-  r.onclick=()=>{document.querySelectorAll(".role").forEach(x=>x.classList.remove("active"));r.classList.add("active");role=r.dataset.role}
-});
+/* ===== Intro remove ===== */
+setTimeout(()=>document.getElementById("intro").remove(),2000);
 
-function register(){
-  const name=document.getElementById("name").value.trim();
-  if(!name||!role)return alert("نام و نقش را وارد کنید");
-  let p=JSON.parse(localStorage.getItem(KEY)||"[]");
-  if(p.some(x=>x.d===localStorage.getItem(DEV)))
-    return alert("قبلاً ثبت کرده‌اید");
-  p.push({n:name,r:role,d:localStorage.getItem(DEV)});
-  localStorage.setItem(KEY,JSON.stringify(p));
-  render();
+/* ===== Flow ===== */
+function goRole(){
+  const name = nameInput.value.trim();
+  if(!name) return alert("اسم وارد کن");
+  if(localStorage.getItem("joined")) return alert("قبلاً ثبت‌نام کردی");
+  step-name.style.display="none";
+  step-role.style.display="block";
 }
 
-function render(){
-  const p=JSON.parse(localStorage.getItem(KEY)||"[]");
-  let A=[],B=[],SA=[],SB=[];
-  let gk=p.filter(x=>x.r=="gk"),pl=p.filter(x=>x.r=="player");
-  shuffle(gk);shuffle(pl);
-  if(gk[0])A.push(gk.shift());
-  if(gk[0])B.push(gk.shift());
-  for(let x of pl){
-    if(A.length<5&&B.length<5)(A.length<=B.length?A:B).push(x);
-    else (SA.length<=SB.length?SA:SB).push(x);
+function register(role){
+  const name = nameInput.value.trim();
+  if(data.users.includes(name)) return;
+
+  let team = Math.random() < 0.5 ? "A" : "B";
+  let target = data["team"+team];
+
+  if(role==="gk"){
+    if(data.teamA.some(x=>x.role==="gk")) team="B";
+    if(data.teamB.some(x=>x.role==="gk")) team="A";
   }
-  draw("teamA",A);draw("teamB",B);draw("subsA",SA);draw("subsB",SB);
+
+  if(data["team"+team].length < 5){
+    data["team"+team].push({name,role});
+  }else{
+    data["sub"+team].push({name,role});
+  }
+
+  data.users.push(name);
+  localStorage.setItem("teamsData",JSON.stringify(data));
+  localStorage.setItem("joined","1");
+  render();
+  alert("ثبت شد ✅");
+  step-role.style.display="none";
 }
-function draw(id,a){
-  const ul=document.getElementById(id);ul.innerHTML="";
-  a.forEach(x=>ul.innerHTML+=`<li>${x.n}</li>`);
-}
-function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}
-function resetAll(){
-  const p=prompt("رمز ادمین:");
-  if(p===PASS){localStorage.clear();location.reload()}
+
+/* ===== Render ===== */
+function render(){
+  teamA.innerHTML = data.teamA.map(x=>`<div class="member">${x.role==="gk"?"🧤":"⚽"} ${x.name}</div>`).join("");
+  teamB.innerHTML = data.teamB.map(x=>`<div class="member">${x.role==="gk"?"🧤":"⚽"} ${x.name}</div>`).join("");
+  subA.innerHTML = data.subA.map(x=>`<div class="member">${x.name}</div>`).join("");
+  subB.innerHTML = data.subB.map(x=>`<div class="member">${x.name}</div>`).join("");
 }
 render();
+
+/* ===== Reset ===== */
+function resetAll(){
+  if(adminPass.value !== ADMIN_PASS) return alert("رمز اشتباه");
+  localStorage.clear();
+  location.reload();
+}
 </script>
 
 </body>

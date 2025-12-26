@@ -5,242 +5,232 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Random Team</title>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <style>
 *{box-sizing:border-box;font-family:tahoma}
 body{
-  margin:0;
-  min-height:100vh;
-  background:radial-gradient(circle at top,#1e90ff,#0b1c2d 60%,#000);
-  color:#fff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+margin:0;
+background:radial-gradient(circle at top,#1e88e5,#0d47a1,#000);
+color:#fff;
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
 }
 
-/* لودینگ */
 #loader{
-  position:fixed;
-  inset:0;
-  background:#000;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  z-index:999;
+position:fixed;
+inset:0;
+background:#000;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:10;
+animation:fadeOut .5s ease .5s forwards;
 }
-#ball{
-  font-size:90px;
-  animation:spin .5s linear forwards;
+@keyframes fadeOut{to{opacity:0;visibility:hidden}}
+
+.ball{
+width:80px;height:80px;
+border-radius:50%;
+background:radial-gradient(circle,#fff,#000);
+animation:spin .5s linear;
 }
-@keyframes spin{
-  to{transform:rotate(360deg);opacity:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.container{
+width:95%;
+max-width:420px;
+background:rgba(0,0,0,.5);
+border-radius:20px;
+padding:15px;
+box-shadow:0 0 30px rgba(255,255,255,.2);
 }
 
-/* هدر ادمین */
-#adminHeader{
-  position:fixed;
-  top:6px;
-  right:8px;
-  display:flex;
-  gap:8px;
-  z-index:50;
-}
-.adminBtn{
-  background:rgba(255,215,0,.85);
-  border:none;
-  border-radius:8px;
-  padding:4px 8px;
-  font-size:11px;
-  cursor:pointer;
-  color:#000;
-}
-.adminBtn:hover{background:#ffd700}
-
-/* باکس اصلی */
-#app{
-  width:95%;
-  max-width:420px;
-  background:linear-gradient(145deg,#0f2a44,#08131f);
-  border-radius:20px;
-  padding:14px;
-  box-shadow:0 0 30px rgba(0,0,0,.7);
-  display:none;
+.top-admin{
+display:flex;
+justify-content:space-between;
+font-size:12px;
+opacity:.7;
+margin-bottom:8px;
 }
 
-/* مراحل */
-h2{text-align:center;font-size:17px;margin:8px 0}
+button{
+border:none;
+padding:12px;
+border-radius:12px;
+font-size:16px;
+cursor:pointer;
+color:#fff;
+width:100%;
+margin-top:8px;
+}
+
+.player{background:#2196f3}
+.goalkeeper{background:#e53935}
+.submit{background:linear-gradient(135deg,#00c853,#00b0ff)}
+.admin{background:linear-gradient(135deg,#fbc02d,#ff9800);font-size:12px}
 
 input{
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  font-size:15px;
-  margin-bottom:10px;
+width:100%;
+padding:12px;
+border-radius:10px;
+border:none;
+font-size:16px;
+margin-top:8px;
 }
 
-.btn{
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  border:none;
-  border-radius:14px;
-  font-size:15px;
-  cursor:pointer;
-  color:#fff;
+.teams{
+margin-top:15px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
 }
 
-.player{background:#1e90ff}
-.gk{background:#e63946}
-.submit{
-  background:linear-gradient(145deg,#00ffcc,#0099ff);
-  font-weight:bold;
+.team{
+background:rgba(255,255,255,.1);
+border-radius:15px;
+padding:8px;
+}
+
+.team h3{
+text-align:center;
+margin:5px 0;
+font-size:16px;
+}
+
+.name{
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+font-size:14px;
+padding:2px 0;
 }
 
 .hidden{display:none}
-
-/* تیم‌ها */
-.teams{
-  display:flex;
-  gap:10px;
-  margin-top:10px;
-}
-.team{
-  flex:1;
-  background:rgba(0,0,0,.4);
-  border-radius:12px;
-  padding:6px;
-}
-.team h3{text-align:center;font-size:14px;margin:4px 0}
-ul{padding:0;margin:0;list-style:none}
-li{
-  font-size:13px;
-  padding:2px 0;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.sub{color:#ffd166}
 </style>
 </head>
 
 <body>
 
-<div id="loader"><div id="ball">⚽</div></div>
-
-<!-- ادمین بالا -->
-<div id="adminHeader">
-  <button class="adminBtn" onclick="adminAction('mix')">Mix</button>
-  <button class="adminBtn" onclick="adminAction('reset')">Reset</button>
+<div id="loader">
+  <div class="ball"></div>
 </div>
 
-<div id="app">
+<div class="container">
 
-  <div id="step1">
-    <h2>نام خود را وارد کنید</h2>
-    <input id="nameInput" placeholder="نام">
-    <button class="btn submit" onclick="goStep2()">ادامه</button>
-  </div>
+<div class="top-admin">
+<span onclick="adminReset()">Reset</span>
+<span onclick="adminShuffle()">Shuffle</span>
+</div>
 
-  <div id="step2" class="hidden">
-    <button class="btn player" onclick="register('player')">بازیکن</button>
-    <button class="btn gk" onclick="register('gk')">دروازه‌بان</button>
-  </div>
+<div id="step1">
+<input id="nameInput" placeholder="اسم خودت رو وارد کن">
+<button class="submit" onclick="goStep2()">ادامه</button>
+</div>
 
-  <div id="teams" class="hidden">
-    <div class="teams">
-      <div class="team">
-        <h3>Team A</h3>
-        <ul id="A"></ul>
-        <ul id="A_sub"></ul>
-      </div>
-      <div class="team">
-        <h3>Team B</h3>
-        <ul id="B"></ul>
-        <ul id="B_sub"></ul>
-      </div>
-    </div>
-  </div>
+<div id="step2" class="hidden">
+<button class="player" onclick="register('player')">بازیکن</button>
+<button class="goalkeeper" onclick="register('goalkeeper')">دروازه‌بان</button>
+</div>
+
+<div class="teams">
+<div class="team">
+<h3>Team A</h3>
+<div id="teamA"></div>
+<h3>Sub</h3>
+<div id="subA"></div>
+</div>
+<div class="team">
+<h3>Team B</h3>
+<div id="teamB"></div>
+<h3>Sub</h3>
+<div id="subB"></div>
+</div>
+</div>
 
 </div>
 
 <script>
-setTimeout(()=>{
-  loader.style.display='none'
-  app.style.display='block'
-  loadTeams()
-},500)
+// 🔥 Firebase Config (اینجا عوض کن)
+const firebaseConfig = {
+  apiKey: "XXXX",
+  authDomain: "XXXX",
+  databaseURL: "XXXX",
+  projectId: "XXXX",
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-const key="randomTeamData"
-const used="registeredOnce"
-
-function data(){
-  return JSON.parse(localStorage.getItem(key)) || {A:[],B:[],A_sub:[],B_sub:[]}
+// جلوگیری از ثبت دوباره
+if(localStorage.getItem("registered")){
+document.getElementById("step1").classList.add("hidden");
+document.getElementById("step2").classList.add("hidden");
 }
-function save(d){localStorage.setItem(key,JSON.stringify(d))}
 
+// مراحل
 function goStep2(){
-  if(!nameInput.value.trim())return
-  if(localStorage.getItem(used)){showTeams();return}
-  step1.classList.add('hidden')
-  step2.classList.remove('hidden')
+if(!nameInput.value.trim())return;
+document.getElementById("step1").classList.add("hidden");
+document.getElementById("step2").classList.remove("hidden");
 }
 
 function register(role){
-  const name=nameInput.value.trim()
-  if(!name)return
-  let d=data()
-  let teams=['A','B'].sort(()=>Math.random()-.5)
-  let placed=false
+const name=nameInput.value.trim();
+if(!name)return;
 
-  for(let t of teams){
-    if(d[t].length<5){
-      if(role==='gk' && d[t].some(x=>x.role==='gk'))continue
-      d[t].push({name,role});placed=true;break
-    }
-  }
-  if(!placed){
-    d[teams[Math.floor(Math.random()*2)]+"_sub"].push({name,role})
-  }
+firebase.database().ref("players").push({
+name,role
+});
 
-  save(d)
-  localStorage.setItem(used,"1")
-  showTeams()
+localStorage.setItem("registered","yes");
+document.getElementById("step2").classList.add("hidden");
 }
 
-function showTeams(){
-  step1.classList.add('hidden')
-  step2.classList.add('hidden')
-  teams.classList.remove('hidden')
-  render()
+// نمایش لایو
+firebase.database().ref("players").on("value",snap=>{
+teamA.innerHTML=teamB.innerHTML=subA.innerHTML=subB.innerHTML="";
+let A=[],B=[];
+snap.forEach(s=>{
+(Math.random()<.5?A:B).push(s.val());
+});
+
+render(A,teamA,subA);
+render(B,teamB,subB);
+});
+
+function render(arr,main,sub){
+let gk=false,count=0;
+arr.forEach(p=>{
+if(count<5 && (!gk || p.role!=="goalkeeper")){
+main.innerHTML+=`<div class="name">${p.name}</div>`;
+count++;
+if(p.role==="goalkeeper")gk=true;
+}else{
+sub.innerHTML+=`<div class="name">${p.name}</div>`;
+}
+});
 }
 
-function render(){
-  let d=data()
-  ;['A','B','A_sub','B_sub'].forEach(id=>{
-    document.getElementById(id).innerHTML=''
-    d[id].forEach(p=>{
-      let li=document.createElement('li')
-      li.textContent=(id.includes('sub')?'🔁 ':'')+(p.role==='gk'?'🧤 ':'⚽ ')+p.name
-      if(id.includes('sub'))li.className='sub'
-      document.getElementById(id).appendChild(li)
-    })
-  })
+// ادمین
+function adminReset(){
+if(prompt("رمز؟")!=="admin12345")return;
+firebase.database().ref("players").remove();
+localStorage.clear();
 }
 
-function loadTeams(){
-  if(localStorage.getItem(used))showTeams()
-}
-
-function adminAction(type){
-  let pass=prompt("رمز ادمین:")
-  if(pass!=="admin12345")return
-  if(type==='reset'){localStorage.clear();location.reload()}
-  if(type==='mix'){
-    let all=[]
-    Object.values(data()).flat().forEach(x=>all.push(x))
-    localStorage.clear()
-    all.forEach(p=>{nameInput.value=p.name;register(p.role)})
-  }
+function adminShuffle(){
+if(prompt("رمز؟")!=="admin12345")return;
+firebase.database().ref("players").once("value",snap=>{
+const data=[];
+snap.forEach(s=>data.push(s.val()));
+firebase.database().ref("players").remove(()=>{
+data.sort(()=>Math.random()-.5)
+data.forEach(p=>firebase.database().ref("players").push(p));
+});
 }
 </script>
 

@@ -1,303 +1,453 @@
 <!doctype html>
 <html lang="fa">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Random Team</title>
-
 <style>
 :root{
-  --bg1:#0f172a;
-  --bg2:#020617;
-  --blue:#2563eb;
-  --red:#dc2626;
-  --green:#22c55e;
-  --cyan:#06b6d4;
-  --gold:#facc15;
-  --text:#e5f0ff;
+  --bg1:#071025;
+  --bg2:#030416;
+  --blue-1:#2563eb;
+  --blue-2:#60a5fa;
+  --red-1:#ef4444;
+  --green-1:#16a34a;
+  --cyan-1:#06b6d4;
+  --gold-1:#f59e0b;
+  --text:#eaf2ff;
+  --card: rgba(255,255,255,0.03);
 }
-
 *{box-sizing:border-box}
-body{
-  margin:0;
-  min-height:100vh;
-  background:
-    radial-gradient(700px 300px at 20% 10%, rgba(37,99,235,.25), transparent),
-    radial-gradient(700px 300px at 80% 90%, rgba(34,197,94,.2), transparent),
-    linear-gradient(180deg,var(--bg1),var(--bg2));
-  font-family:tahoma,sans-serif;
-  color:var(--text);
-}
+html,body{height:100%;margin:0;font-family: Vazirmatn, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:
+  radial-gradient(800px 300px at 10% 10%, rgba(37,99,235,0.06), transparent 6%),
+  radial-gradient(900px 300px at 90% 90%, rgba(34,197,94,0.04), transparent 6%),
+  linear-gradient(180deg,var(--bg1),var(--bg2)); color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+/* splash */
+#splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:200;pointer-events:none}
+#ball{font-size:110px;animation:spin .5s cubic-bezier(.2,.9,.2,1) both}
+@keyframes spin{0%{transform:rotate(0) scale(1);opacity:1}60%{transform:rotate(360deg) scale(1.12);opacity:1}100%{transform:rotate(720deg) scale(1);opacity:0}}
+/* bubbles bg */
+.bubbles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bubble{position:absolute;border-radius:50%;opacity:0.06;filter:blur(10px);animation:float linear infinite}
+@keyframes float{0%{transform:translateY(110vh) scale(.6);opacity:0}10%{opacity:.04}50%{opacity:.07}100%{transform:translateY(-30vh) scale(1.1);opacity:0}}
 
-#splash{
-  position:fixed;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  background:transparent;
-  z-index:100;
-}
-#splash span{
-  font-size:90px;
-  animation:spin .5s ease-out forwards;
-}
-@keyframes spin{
-  to{transform:rotate(360deg) scale(.2);opacity:0}
-}
+.container{position:relative;z-index:10;min-height:100vh;display:flex;align-items:start;justify-content:center;padding:32px 16px}
+.panel{width:100%;max-width:1050px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.18));border-radius:16px;padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 30px 70px rgba(0,0,0,0.6);backdrop-filter: blur(3px)}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.title{font-weight:900;font-size:20px;background:linear-gradient(90deg,var(--cyan-1),var(--blue-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.count{font-size:13px;color:rgba(255,255,255,0.7)}
 
-.app{
-  display:flex;
-  justify-content:center;
-  padding:12px;
-}
+/* layout: left (form steps) + right (teams) */
+.grid{display:grid;grid-template-columns:420px 1fr;gap:14px}
+@media (max-width:920px){ .grid{grid-template-columns:1fr} }
 
-.panel{
-  width:100%;
-  max-width:900px;
-  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.5));
-  border-radius:20px;
-  padding:14px;
-  box-shadow:0 30px 80px rgba(0,0,0,.8);
-}
-
-h1{
-  text-align:center;
-  margin:6px 0 10px;
-  font-size:20px;
-  letter-spacing:1px;
-}
-
+/* Steps area */
+.card{background:var(--card);padding:14px;border-radius:12px}
 .step{display:none}
 .step.active{display:block}
+.input{width:100%;padding:12px;border-radius:10px;border:none;background:rgba(255,255,255,0.02);color:var(--text);font-size:15px}
+.roles{display:flex;gap:10px;margin-top:12px}
+.role{flex:1;padding:14px;border-radius:12px;text-align:center;font-weight:900;cursor:pointer;box-shadow:0 10px 20px rgba(2,6,23,0.6);opacity:.85;transition:transform .12s, box-shadow .12s}
+.role.player{background:linear-gradient(135deg,var(--blue-1),var(--blue-2)); color:white}
+.role.gk{background:linear-gradient(135deg,var(--red-1),#b91c1c); color:white}
+.role.active{transform:translateY(-6px);box-shadow:0 20px 40px rgba(2,6,23,0.6);opacity:1}
 
-input{
-  width:100%;
-  padding:14px;
-  border-radius:14px;
-  border:none;
-  background:rgba(255,255,255,.12);
-  color:white;
-  font-size:15px;
-}
+/* buttons */
+.btn{width:100%;padding:14px;border-radius:12px;border:none;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px;box-shadow:0 8px 0 rgba(0,0,0,0.45);transition:transform .08s}
+.btn:active{transform:translateY(2px)}
+.btn-register{background:linear-gradient(135deg,var(--green-1),var(--cyan-1));color:#012;border-bottom:5px solid rgba(0,0,0,0.35)}
+.btn-reset{background:linear-gradient(135deg,var(--gold-1),#fcd34d);color:#3a2a00;border-bottom:5px solid rgba(0,0,0,0.35)}
+.btn-shuffle{background:linear-gradient(135deg,#94a3b8,#c7d2fe);color:#012;border-bottom:5px solid rgba(0,0,0,0.25)}
 
-.btn{
-  width:100%;
-  margin-top:12px;
-  padding:14px;
-  border:none;
-  border-radius:16px;
-  font-size:16px;
-  font-weight:900;
-  cursor:pointer;
-  box-shadow:0 6px 0 rgba(0,0,0,.4);
-}
+/* teams area */
+.teams-wrap{padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));min-height:300px}
+.teams{display:flex;gap:12px}
+.team{flex:1;background:rgba(255,255,255,0.02);border-radius:10px;padding:10px;min-height:180px;overflow:auto}
+.team h3{margin:6px 0 10px;font-size:15px}
+.ul{list-style:none;padding:0;margin:0}
+.li{padding:8px;border-radius:10px;margin:6px 0;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;gap:10px;align-items:center}
 
-.next{
-  background:linear-gradient(145deg,var(--green),var(--cyan));
-  color:#022;
-}
+/* subs label */
+.sub-label{font-size:13px;color:var(--gold-1);margin-top:8px}
 
-.roles{
-  display:flex;
-  gap:12px;
-  margin-top:12px;
-}
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:rgba(3,6,23,0.9);padding:8px 12px;border-radius:10px;color:#fff;z-index:300;display:none}
 
-.role{
-  flex:1;
-  padding:18px;
-  border-radius:18px;
-  text-align:center;
-  font-size:16px;
-  font-weight:900;
-  cursor:pointer;
-  opacity:.7;
-}
-
-.role.player{background:linear-gradient(145deg,#3b82f6,#1d4ed8)}
-.role.gk{background:linear-gradient(145deg,#ef4444,#b91c1c)}
-.role.active{
-  opacity:1;
-  box-shadow:0 0 25px rgba(255,255,255,.4);
-}
-
-.teams{
-  display:flex;
-  gap:12px;
-  margin-top:14px;
-}
-
-.team{
-  flex:1;
-  background:rgba(255,255,255,.08);
-  border-radius:16px;
-  padding:10px;
-}
-
-.team h3{
-  text-align:center;
-  margin:4px 0 6px;
-  font-size:14px;
-}
-
-ul{list-style:none;padding:0;margin:0}
-li{
-  background:rgba(0,0,0,.45);
-  margin:5px 0;
-  padding:7px 10px;
-  border-radius:10px;
-  font-size:13px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.admin{
-  margin-top:12px;
-  display:flex;
-  gap:10px;
-}
-
-.admin button{
-  flex:1;
-  background:linear-gradient(145deg,var(--gold),#fde047);
-  border:none;
-  border-radius:14px;
-  padding:12px;
-  font-weight:900;
-  cursor:pointer;
+/* small screens */
+@media (max-width:420px){
+  #ball{font-size:80px}
+  .grid{gap:10px}
 }
 </style>
 </head>
-
 <body>
 
-<div id="splash"><span>⚽</span></div>
+<div class="bubbles" id="bubbles"></div>
 
-<div class="app">
-<div class="panel">
+<div id="splash"><div id="ball">⚽</div></div>
 
-<h1>Random Team</h1>
+<div class="container">
+  <div class="panel" role="main" aria-label="Random Team">
 
-<!-- STEP 1 -->
-<div class="step" id="step1">
-  <input id="name" placeholder="اسم و فامیلی">
-  <button class="btn next" onclick="goStep2()">ادامه</button>
-</div>
+    <div class="header">
+      <div class="title">Random Team</div>
+      <div class="count" id="count">۰ نفر</div>
+    </div>
 
-<!-- STEP 2 -->
-<div class="step" id="step2">
-  <div class="roles">
-    <div class="role player" onclick="selectRole('player')">⚽ بازیکن</div>
-    <div class="role gk" onclick="selectRole('gk')">🧤 دروازه‌بان</div>
-  </div>
-  <button class="btn next" onclick="register()">ثبت نهایی</button>
-</div>
+    <div class="grid">
+      <!-- LEFT: steps -->
+      <div class="card" id="stepsArea">
+        <!-- Step 1: name -->
+        <div class="step" id="step1">
+          <input id="nameInput" class="input" placeholder="نام و نام‌خانوادگی (فارسی یا انگلیسی)" maxlength="40" />
+          <button id="btnNext" class="btn btn-register" aria-label="مرحله بعد">ادامه</button>
+        </div>
 
-<!-- TEAMS -->
-<div class="teams">
-  <div class="team">
-    <h3>🔵 Team A</h3>
-    <ul id="A"></ul>
-  </div>
-  <div class="team">
-    <h3>🔴 Team B</h3>
-    <ul id="B"></ul>
-  </div>
-</div>
+        <!-- Step 2: choose role -->
+        <div class="step" id="step2">
+          <div style="font-weight:900;margin-bottom:8px">نقش خود را انتخاب کن</div>
+          <div class="roles">
+            <div id="rolePlayer" class="role player" role="button" tabindex="0" aria-pressed="false">⚽ بازیکن</div>
+            <div id="roleGk" class="role gk" role="button" tabindex="0" aria-pressed="false">🧤 دروازه‌بان</div>
+          </div>
+          <button id="btnRegister" class="btn btn-register" aria-label="ثبت نهایی">ثبت نهایی</button>
+        </div>
 
-<div class="admin">
-  <button onclick="shuffle()">قاطی‌کردن</button>
-  <button onclick="resetAll()">ریست</button>
-</div>
+        <!-- Hidden small admin area (buttons) -->
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button id="btnShuffle" class="btn btn-shuffle" title="ایجاد چینش شانسی (ادمین)">🔀 قاطی‌کردن (ادمین)</button>
+          <button id="btnReset" class="btn btn-reset" title="ریست کامل (ادمین)">🔐 ریست (ادمین)</button>
+        </div>
+      </div>
 
-</div>
-</div>
+      <!-- RIGHT: teams -->
+      <div class="teams-wrap">
+        <div class="teams" id="teamsArea">
+          <div class="team" aria-live="polite">
+            <h3>🔵 تیم A</h3>
+            <ul id="listA" class="ul"></ul>
+            <div class="sub-label">🔄 تعویضی A</div>
+            <ul id="subsA" class="ul"></ul>
+          </div>
+          <div class="team" aria-live="polite">
+            <h3>🔴 تیم B</h3>
+            <ul id="listB" class="ul"></ul>
+            <div class="sub-label">🔄 تعویضی B</div>
+            <ul id="subsB" class="ul"></ul>
+          </div>
+        </div>
+      </div>
+    </div> <!-- grid -->
+
+  </div> <!-- panel -->
+</div> <!-- container -->
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
-setTimeout(()=>document.getElementById('splash').remove(),600);
+(() => {
+  'use strict';
 
-const KEY="RANDOM_TEAM_STATE";
-const DEV="RANDOM_TEAM_DEV";
-const ADMIN="admin12345";
+  /* ---------- CONFIG ---------- */
+  const ADMIN_PASS = 'admin12345';
+  const STORAGE_KEY = 'RT_STATE_V2';      // saved assignments & players
+  const DEVICE_KEY = 'RT_DEVICE_V2';      // device id (prevents re-register)
+  const TEAMS_COUNT = 2;                  // fixed 2 teams
+  const MAX_TEAM_SIZE = 5;                // including GK
 
-let role=null;
-let state=JSON.parse(localStorage.getItem(KEY)||'[]');
+  /* ---------- DOM ---------- */
+  const splash = document.getElementById('splash');
+  const nameInput = document.getElementById('nameInput');
+  const btnNext = document.getElementById('btnNext');
+  const step1 = document.getElementById('step1');
+  const step2 = document.getElementById('step2');
+  const rolePlayer = document.getElementById('rolePlayer');
+  const roleGk = document.getElementById('roleGk');
+  const btnRegister = document.getElementById('btnRegister');
+  const btnShuffle = document.getElementById('btnShuffle');
+  const btnReset = document.getElementById('btnReset');
+  const listA = document.getElementById('listA');
+  const listB = document.getElementById('listB');
+  const subsA = document.getElementById('subsA');
+  const subsB = document.getElementById('subsB');
+  const countEl = document.getElementById('count');
+  const toastEl = document.getElementById('toast');
+  const stepsArea = document.getElementById('stepsArea');
 
-function dev(){
-  let d=localStorage.getItem(DEV);
-  if(!d){d=Math.random().toString(36);localStorage.setItem(DEV,d)}
-  return d;
-}
+  /* ---------- utils ---------- */
+  function toast(msg, ms=1600){
+    toastEl.textContent = msg;
+    toastEl.style.display = 'block';
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(()=>toastEl.style.display='none', ms);
+  }
+  function devId(){
+    try{
+      let d = localStorage.getItem(DEVICE_KEY);
+      if(!d){ d = Date.now().toString(36) + Math.random().toString(36).slice(2,8); localStorage.setItem(DEVICE_KEY, d); }
+      return d;
+    } catch(e){ return 'dev-'+Math.random().toString(36).slice(2,8); }
+  }
+  const DEVICE = devId();
 
-function alreadyRegistered(){
-  return state.some(x=>x.dev===dev());
-}
+  function saveState(state){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.error('save err', e); } }
+  function loadState(){ try{ const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : { players: [] }; }catch(e){ return { players: [] }; } }
 
-function goStep2(){
-  if(!name.value.trim()) return;
-  showStep(2);
-}
+  // secure-ish random integer
+  function randInt(max){
+    try{
+      if(window.crypto && crypto.getRandomValues){
+        const a = new Uint32Array(1);
+        crypto.getRandomValues(a);
+        return a[0] % max;
+      }
+    }catch(e){}
+    return Math.floor(Math.random()*max);
+  }
 
-function showStep(n){
-  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
-  const el=document.getElementById('step'+n);
-  if(el) el.classList.add('active');
-}
+  function shuffleArray(arr){
+    for(let i=arr.length-1;i>0;i--){
+      const j = randInt(i+1);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
 
-function selectRole(r){
-  role=r;
-  document.querySelectorAll('.role').forEach(x=>x.classList.remove('active'));
-  document.querySelector('.'+r).classList.add('active');
-}
+  /* ---------- assignment algorithm ---------- */
+  // state.players: array of {name, role:'player'|'gk', dev, team, sub}
+  function assignAll(state){
+    // separate
+    const gks = state.players.filter(p => p.role === 'gk').map(p=>({name:p.name,dev:p.dev}));
+    const players = state.players.filter(p => p.role !== 'gk').map(p=>({name:p.name,dev:p.dev}));
+    shuffleArray(gks);
+    shuffleArray(players);
 
-function register(){
-  if(!role) return;
-  if(alreadyRegistered()) return;
+    // init teams
+    const teams = Array.from({length:TEAMS_COUNT}, ()=>({members:[], subs:[]}));
 
-  state.push({
-    name:name.value.trim(),
-    role,
-    dev:dev()
+    // assign GK per team (if available)
+    for(let i=0;i<TEAMS_COUNT;i++){
+      if(gks[i]){
+        teams[i].members.push({name:gks[i].name, role:'gk', dev:gks[i].dev});
+      }
+    }
+    // assign players round-robin but respect MAX_TEAM_SIZE
+    let idx = 0;
+    for(const p of players){
+      // find team in round-robin order starting at idx with room < MAX_TEAM_SIZE
+      let attempts = 0;
+      let placed = false;
+      while(attempts < TEAMS_COUNT){
+        const t = (idx + attempts) % TEAMS_COUNT;
+        if(teams[t].members.length < MAX_TEAM_SIZE){
+          teams[t].members.push({name:p.name, role:'player', dev:p.dev});
+          placed = true; break;
+        }
+        attempts++;
+      }
+      if(!placed){
+        // all mains full -> put in subs, choose team with smaller subs
+        const subsCounts = teams.map(t=>t.subs.length);
+        const pick = subsCounts[0] <= subsCounts[1] ? 0 : 1;
+        teams[pick].subs.push({name:p.name, role:'player', dev:p.dev});
+      }
+      idx++;
+    }
+
+    // If any team still exceeds MAX_TEAM_SIZE (rare), move extras to subs
+    for(const t of teams){
+      while(t.members.length > MAX_TEAM_SIZE){
+        const moved = t.members.pop();
+        t.subs.push(moved);
+      }
+    }
+
+    // write back into state.players
+    const newPlayers = [];
+    for(let ti=0;ti<TEAMS_COUNT;ti++){
+      for(const m of teams[ti].members){
+        newPlayers.push({name:m.name, role:m.role, dev:m.dev, team: ti===0 ? 'A' : 'B', sub: false});
+      }
+      for(const s of teams[ti].subs){
+        newPlayers.push({name:s.name, role:s.role, dev:s.dev, team: ti===0 ? 'A' : 'B', sub: true});
+      }
+    }
+    state.players = newPlayers;
+    return state;
+  }
+
+  /* ---------- render ---------- */
+  function render(){
+    const state = loadState();
+    // ensure assignment updated
+    assignAll(state);
+    saveState(state);
+
+    // clear lists
+    listA.innerHTML = '';
+    listB.innerHTML = '';
+    subsA.innerHTML = '';
+    subsB.innerHTML = '';
+
+    // fill
+    const mainA = state.players.filter(p=>p.team==='A' && !p.sub);
+    const mainB = state.players.filter(p=>p.team==='B' && !p.sub);
+    const subA = state.players.filter(p=>p.team==='A' && p.sub);
+    const subB = state.players.filter(p=>p.team==='B' && p.sub);
+
+    for(const p of mainA){
+      const li = document.createElement('li'); li.className='li';
+      li.textContent = (p.role==='gk' ? '🧤 ' : '⚽ ') + p.name;
+      listA.appendChild(li);
+    }
+    for(const p of mainB){
+      const li = document.createElement('li'); li.className='li';
+      li.textContent = (p.role==='gk' ? '🧤 ' : '⚽ ') + p.name;
+      listB.appendChild(li);
+    }
+    for(const s of subA){
+      const li = document.createElement('li'); li.className='li'; li.textContent = '🔁 ' + s.name; subsA.appendChild(li);
+    }
+    for(const s of subB){
+      const li = document.createElement('li'); li.className='li'; li.textContent = '🔁 ' + s.name; subsB.appendChild(li);
+    }
+
+    // update count
+    countEl.textContent = state.players.length + ' نفر';
+  }
+
+  /* ---------- step UI logic ---------- */
+  function userRegistered(){
+    const state = loadState();
+    return state.players.some(p => p.dev === DEVICE);
+  }
+
+  function showStepsIfNotRegistered(){
+    if(userRegistered()){
+      // hide steps area fully
+      stepsArea.style.display = 'none';
+    } else {
+      stepsArea.style.display = 'block';
+      showStep(1);
+    }
+  }
+
+  function showStep(n){
+    step1.classList.remove('active');
+    step2.classList.remove('active');
+    if(n===1) step1.classList.add('active');
+    if(n===2) step2.classList.add('active');
+  }
+
+  /* ---------- event handlers ---------- */
+  btnNext.addEventListener('click', ()=>{
+    const name = nameInput.value.trim();
+    if(!name){ toast('لطفاً اسم خود را وارد کنید'); return; }
+    showStep(2);
   });
-  localStorage.setItem(KEY,JSON.stringify(state));
-  hideSteps();
-  render();
-}
 
-function hideSteps(){
-  document.querySelectorAll('.step').forEach(s=>s.style.display='none');
-}
+  // role select
+  let selectedRole = null;
+  function setRole(r){
+    selectedRole = r;
+    rolePlayer.classList.toggle('active', r==='player');
+    roleGk.classList.toggle('active', r==='gk');
+    rolePlayer.setAttribute('aria-pressed', r==='player');
+    roleGk.setAttribute('aria-pressed', r==='gk');
+  }
+  rolePlayer.addEventListener('click', ()=> setRole('player'));
+  roleGk.addEventListener('click', ()=> setRole('gk'));
+  rolePlayer.addEventListener('keydown', (e)=>{ if(e.key==='Enter') setRole('player'); });
+  roleGk.addEventListener('keydown', (e)=>{ if(e.key==='Enter') setRole('gk'); });
 
-function resetAll(){
-  if(prompt('رمز ادمین')!==ADMIN) return;
-  localStorage.clear();
-  state=[];
-  location.reload();
-}
+  // register
+  btnRegister.addEventListener('click', ()=>{
+    if(userRegistered()){ toast('شما قبلاً ثبت کردید'); showStepsIfNotRegistered(); return; }
+    const name = nameInput.value.trim();
+    if(!name) { toast('اسم را وارد کن'); return; }
+    if(!selectedRole) { toast('نقش را انتخاب کن'); return; }
 
-function shuffle(){
-  if(prompt('رمز ادمین')!==ADMIN) return;
-  state.sort(()=>Math.random()-.5);
-  localStorage.setItem(KEY,JSON.stringify(state));
-  render();
-}
+    // load state and append (temp)
+    const state = loadState();
+    // prevent duplicates by name or device
+    if(state.players.some(p => p.dev === DEVICE)){
+      toast('قبلاً ثبت شده‌ای');
+      showStepsIfNotRegistered();
+      return;
+    }
+    state.players.push({name: name, role: selectedRole, dev: DEVICE});
+    assignAll(state);
+    saveState(state);
 
-function render(){
-  A.innerHTML=B.innerHTML='';
-  state.forEach((p,i)=>{
-    const li=document.createElement('li');
-    li.textContent=(p.role==='gk'?'🧤 ':'⚽ ')+p.name;
-    (i%2?B:A).appendChild(li);
+    // hide steps for this device
+    showStepsIfNotRegistered();
+    render();
+    toast('ثبت شد ✅');
   });
-}
 
-if(alreadyRegistered()){
-  hideSteps();
-}else{
-  showStep(1);
-}
+  // admin shuffle
+  btnShuffle.addEventListener('click', ()=>{
+    const pass = prompt('رمز ادمین:');
+    if(pass === null) return;
+    if(pass !== ADMIN_PASS){ toast('رمز اشتباه'); return; }
+    const state = loadState();
+    // shuffle order, then reassign
+    shuffleArray(state.players);
+    assignAll(state);
+    saveState(state);
+    render();
+    toast('تیم‌ها دوباره شانسی شدند');
+  });
 
-render();
+  // admin reset
+  btnReset.addEventListener('click', ()=>{
+    const pass = prompt('رمز ادمین:');
+    if(pass === null) return;
+    if(pass !== ADMIN_PASS){ toast('رمز اشتباه'); return; }
+    if(!confirm('آیا می‌خواهید همه چیز پاک شود؟')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    // DO NOT remove DEVICE_KEY — keep per-device registration until admin decides to clear
+    // but user wanted full reset; remove device too so everyone can register again:
+    localStorage.removeItem(DEVICE_KEY);
+    render();
+    showStepsIfNotRegistered();
+    toast('پاک شد');
+  });
+
+  /* ---------- init visual extras ---------- */
+  // bubbles
+  (function makeBubbles(){
+    try{
+      const root = document.getElementById('bubbles');
+      const colors = ['rgba(96,165,250,0.08)','rgba(52,211,153,0.06)','rgba(252,191,73,0.05)','rgba(244,114,182,0.05)'];
+      for(let i=0;i<10;i++){
+        const b = document.createElement('div');
+        b.className = 'bubble';
+        const size = 80 + Math.round(Math.random()*260);
+        b.style.width = size+'px'; b.style.height = size+'px';
+        b.style.left = Math.round(Math.random()*100)+'%';
+        b.style.bottom = -(Math.random()*40+10)+'vh';
+        b.style.background = colors[i%colors.length];
+        b.style.animationDuration = (20 + Math.random()*30)+'s';
+        b.style.opacity = (0.02 + Math.random()*0.06).toString();
+        root.appendChild(b);
+      }
+    }catch(e){ console.error(e); }
+  })();
+
+  // hide splash after animation
+  setTimeout(()=>{ try{ splash && splash.remove(); }catch(e){} }, 700);
+
+  // initial render and ui
+  render();
+  showStepsIfNotRegistered();
+
+  // expose minor debug (optional)
+  window.RT = {
+    loadState, saveState, assignAll, render
+  };
+
+})();
 </script>
-
 </body>
 </html>

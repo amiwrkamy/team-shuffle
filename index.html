@@ -3,76 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team Draft</title>
+<title>Team Randomizer</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <style>
-*{box-sizing:border-box}
 body{
 margin:0;
-font-family:Vazirmatn, sans-serif;
-background:radial-gradient(circle at top,#1e3c72,#0f2027);
+font-family:sans-serif;
+background:linear-gradient(135deg,#141e30,#243b55);
 color:#fff;
-min-height:100vh;
 }
-.container{
-max-width:420px;
-margin:auto;
-padding:15px;
-}
-.header{
-text-align:center;
-margin-bottom:15px;
-}
-.header h1{
-margin:0;
-font-size:26px;
-letter-spacing:1px;
-}
-.admin{
-display:flex;
-gap:10px;
-margin-bottom:15px;
-}
-.admin button{
-flex:1;
-background:linear-gradient(135deg,#ff512f,#dd2476);
-color:#fff;
-border:none;
-padding:12px;
-border-radius:14px;
-font-weight:bold;
-box-shadow:0 10px 25px rgba(0,0,0,.4);
-}
+.container{max-width:420px;margin:auto;padding:15px}
 .card{
 background:rgba(255,255,255,.1);
 backdrop-filter:blur(14px);
 border-radius:22px;
 padding:20px;
-box-shadow:0 20px 50px rgba(0,0,0,.6);
+box-shadow:0 20px 40px rgba(0,0,0,.6);
 margin-bottom:15px;
-transform-style:preserve-3d;
 }
-.card:hover{
-transform:translateY(-3px);
-transition:.3s;
-}
-input,button{
+h2,h3{text-align:center}
+
+/* 🔥 دکمه‌های دینامیکی */
+button{
 width:100%;
 padding:14px;
 border:none;
-border-radius:14px;
+border-radius:16px;
 font-size:15px;
-}
-input{margin-top:10px}
-button.main{
+font-weight:bold;
+cursor:pointer;
 background:linear-gradient(135deg,#00c6ff,#0072ff);
 color:#fff;
-font-weight:bold;
-margin-top:12px;
-box-shadow:0 10px 30px rgba(0,114,255,.6);
+box-shadow:0 10px 25px rgba(0,114,255,.6);
+transition:.2s;
+}
+button:active{
+transform:scale(.95);
+box-shadow:0 5px 15px rgba(0,114,255,.8);
+}
+button:hover{filter:brightness(1.1)}
+
+input{
+width:100%;
+padding:14px;
+border-radius:14px;
+border:none;
+margin-top:10px;
 }
 .roles{
 display:flex;
@@ -86,9 +65,13 @@ color:#000;
 padding:10px;
 border-radius:12px;
 text-align:center;
-font-weight:bold;
 }
-.team h3{text-align:center}
+.top{
+display:flex;
+gap:10px;
+margin-bottom:10px;
+}
+ul{list-style:none;padding:0}
 li{
 background:rgba(255,255,255,.15);
 margin-top:6px;
@@ -102,25 +85,22 @@ border-radius:10px;
 <body>
 <div class="container">
 
-<div class="header">
-<h1>⚽ Team Draft</h1>
-</div>
-
-<div class="admin">
+<div class="top">
 <button onclick="adminReset()">ریست</button>
 <button onclick="adminShuffle()">شانسی دوباره</button>
 </div>
 
 <div id="form" class="card">
-<input id="name" placeholder="نام بازیکن">
+<h2>ثبت نام</h2>
+<input id="name" placeholder="نام">
 <div class="roles">
 <label><input type="radio" name="role" value="player" checked> بازیکن</label>
 <label><input type="radio" name="role" value="goalkeeper"> دروازه‌بان</label>
 </div>
-<button class="main" onclick="register()">ثبت نام</button>
+<button onclick="register()">ثبت</button>
 </div>
 
-<div class="card team">
+<div class="card">
 <h3>تیم A</h3>
 <ul id="A"></ul>
 <h3>تیم B</h3>
@@ -130,25 +110,24 @@ border-radius:10px;
 </div>
 
 <script>
-const firebaseConfig = {
+const firebaseConfig={
 apiKey:"XXXX",
 authDomain:"XXXX",
 projectId:"XXXX"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
 const ADMIN="admin12345";
 
-const deviceId=localStorage.id||(localStorage.id=Math.random().toString(36));
+const deviceId=localStorage.did||(localStorage.did=Math.random().toString(36));
 
-const initTeams=async()=>{
+async function init(){
 await db.doc("teams/A").set({gk:null,p:[],s:[]},{merge:true});
 await db.doc("teams/B").set({gk:null,p:[],s:[]},{merge:true});
-};
-initTeams();
+}
+init();
 
-db.collection("meta").doc("lock").get().then(d=>{
+db.doc("meta/lock").get().then(d=>{
 if(d.exists && d.data()[deviceId]) form.classList.add("hidden");
 });
 
@@ -159,19 +138,18 @@ const n=name.value.trim();
 if(!n) return alert("نام وارد کن");
 
 const r=document.querySelector('input[name=role]:checked').value;
-const teams=["A","B"].sort(()=>Math.random()-.5);
+const order=["A","B"].sort(()=>Math.random()-.5);
 
-for(let t of teams){
+for(let t of order){
 let ref=db.doc("teams/"+t);
-let doc=await ref.get();
-let d=doc.data();
+let d=(await ref.get()).data();
 
-if(r=="goalkeeper" && !d.gk){
+if(r==="goalkeeper" && !d.gk){
 d.gk=n+" 🧤";
 await ref.set(d);
-lock(); return;
+lock();return;
 }
-if(r=="player"){
+if(r==="player"){
 if(d.p.length<5){d.p.push(n);await ref.set(d);lock();return;}
 else{d.s.push(n+" 🔄");await ref.set(d);lock();return;}
 }
@@ -186,17 +164,17 @@ form.classList.add("hidden");
 
 function render(snap){
 ["A","B"].forEach(x=>document.getElementById(x).innerHTML="");
-snap.forEach(d=>{
-let t=d.id,dt=d.data(),ul=document.getElementById(t);
-if(dt.gk) ul.innerHTML+=`<li>${dt.gk}</li>`;
-dt.p.forEach(x=>ul.innerHTML+=`<li>${x}</li>`);
-dt.s.forEach(x=>ul.innerHTML+=`<li>${x}</li>`);
+snap.forEach(doc=>{
+let d=doc.data(),ul=document.getElementById(doc.id);
+if(d.gk) ul.innerHTML+=`<li>${d.gk}</li>`;
+d.p.forEach(x=>ul.innerHTML+=`<li>${x}</li>`);
+d.s.forEach(x=>ul.innerHTML+=`<li>${x}</li>`);
 });
 }
 
 function adminReset(){
 if(prompt("رمز")!==ADMIN) return;
-db.collection("teams").get().then(q=>q.forEach(d=>d.ref.set({gk:null,p:[],s:[]})));
+["A","B"].forEach(t=>db.doc("teams/"+t).set({gk:null,p:[],s:[]}));
 db.doc("meta/lock").delete();
 location.reload();
 }

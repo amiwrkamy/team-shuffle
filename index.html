@@ -1,330 +1,259 @@
 <!doctype html>
 <html lang="fa">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Team Shuffle — ثبت تیم ⚽</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team Shuffle ⚽</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;700&display=swap" rel="stylesheet">
+
 <style>
-:root{
-  --bg-dark:#031022; --card:#071424;
-  --accent-blue:#0077f0; --accent-yellow:#ffd100; --accent-red:#ff5252; --accent-green:#00d27a;
-  --muted:#9fb0d6;
+*{box-sizing:border-box;font-family:Vazirmatn}
+html,body{margin:0;height:100%;color:#fff}
+
+/* 🎥 Video Background */
+.video-bg{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  overflow:hidden;
 }
-*{box-sizing:border-box;font-family:'Vazirmatn',sans-serif}
-html,body{height:100%;margin:0;background:#000;color:#eaf2ff}
-.bg-field{
-  position:fixed;inset:0;z-index:-1;
-  background: url('bg.jpg') center/cover no-repeat;
-  filter: brightness(.45);
+.video-bg video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:brightness(.85) saturate(1.1);
 }
-.app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.container{width:100%;max-width:980px}
-.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px;padding:16px;box-shadow:0 24px 60px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.02)}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.title{font-weight:800;color:var(--accent-yellow);font-size:20px}
-.grid{display:grid;grid-template-columns:1fr 380px;gap:12px}
-@media (max-width:860px){ .grid{grid-template-columns:1fr} }
-.splash{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;flex-direction:column;background:linear-gradient(180deg,rgba(2,10,26,0.96),rgba(2,10,26,0.9));transition:opacity .45s ease;backdrop-filter: blur(4px)}
-.splash.hidden{opacity:0;pointer-events:none}
-.ball{font-size:140px;animation:shrink 1s cubic-bezier(.2,.9,.2,1) forwards}
-@keyframes shrink{0%{transform:scale(2.2);opacity:0}20%{opacity:1}100%{transform:scale(1);opacity:1}}
-.form-row{margin-bottom:10px}
-input[type="text"]{width:100%;padding:12px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:inherit;font-size:15px}
-.roles{display:flex;gap:8px;margin-bottom:8px}
-.role{flex:1;padding:10px;border-radius:8px;text-align:center;cursor:pointer;border:2px solid transparent;background:rgba(255,255,255,0.01);user-select:none}
-.role.active{box-shadow:0 10px 28px rgba(0,0,0,0.6)}
-.role.player.active{border-color:var(--accent-blue)}
-.role.gk.active{border-color:var(--accent-green)}
-.btn{display:inline-block;padding:10px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent-blue),var(--accent-green));color:#001218;font-weight:700;cursor:pointer;width:100%}
-.small{padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--muted);cursor:pointer}
-.list{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;max-height:360px;overflow:auto;margin-top:8px}
+
+/* overlay */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.55));
+  z-index:-1;
+}
+
+.app{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:16px;
+}
+
+.card{
+  width:100%;
+  max-width:900px;
+  background:rgba(0,0,0,.55);
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+
+h1{
+  font-size:18px;
+  margin:0 0 10px;
+  color:#ffd100;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  font-size:13px;
+}
+
+.roles{
+  display:flex;
+  gap:8px;
+  margin:8px 0;
+}
+
+.role{
+  flex:1;
+  padding:8px;
+  border-radius:8px;
+  text-align:center;
+  cursor:pointer;
+  background:rgba(255,255,255,.08);
+  font-size:13px;
+}
+
+.role.active{
+  outline:2px solid #00d27a;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(90deg,#ffd100,#00d27a);
+  color:#000;
+  font-size:13px;
+}
+
+.teams{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+
+.team{
+  background:rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:8px;
+}
+
+.team h3{
+  margin:0 0 6px;
+  font-size:14px;
+  color:#ffd100;
+}
+
 ul{list-style:none;padding:0;margin:0}
-li{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;margin-bottom:8px;background:rgba(0,0,0,0.05)}
-.badge{font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.03)}
-.footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-.reset-btn{padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent-red),var(--accent-yellow));color:#001;font-weight:800;border:none;cursor:pointer}
-.modal-back{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:80}
-.modal{background:linear-gradient(180deg,#071428,#06121d);padding:14px;border-radius:10px;width:340px;box-shadow:0 18px 44px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.03)}
-.modal h4{margin:0 0 8px 0;color:var(--accent-yellow)}
-.modal input{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:inherit;margin-bottom:8px}
-.small-note{font-size:12px;color:var(--muted)}
-.counter{font-weight:800;color:var(--accent-yellow)}
+li{
+  font-size:12px;
+  padding:6px;
+  background:rgba(0,0,0,.35);
+  border-radius:6px;
+  margin-bottom:6px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.subs-title{
+  font-size:11px;
+  margin-top:6px;
+  color:#9fdfff;
+}
+
+.reset{
+  margin-top:12px;
+  background:linear-gradient(90deg,#ff5252,#ffd100);
+}
+
+/* ⚽ Splash */
+.splash{
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#000;
+  z-index:10;
+  animation:fadeOut 1s ease forwards;
+  animation-delay:1.2s;
+}
+.splash span{
+  font-size:120px;
+  animation:ball 1s ease forwards;
+}
+@keyframes ball{
+  from{transform:scale(2)}
+  to{transform:scale(1)}
+}
+@keyframes fadeOut{
+  to{opacity:0;pointer-events:none}
+}
 </style>
 </head>
-<body>
-<div class="bg-field"></div>
 
-<div class="splash" id="splash">
-  <div class="ball">⚽</div>
-  <div style="color:var(--accent-yellow);font-weight:800;margin-top:12px">Team Shuffle</div>
+<body>
+
+<div class="video-bg">
+  <video src="bg.mp4" autoplay muted loop playsinline></video>
 </div>
+<div class="overlay"></div>
+
+<div class="splash"><span>⚽</span></div>
 
 <div class="app">
-  <div class="container">
-    <div class="card">
-      <div class="header">
-        <div class="title">⚽ Team Shuffle</div>
-        <div class="small-note">دو تیم — ثبت‌نام آفلاین</div>
-      </div>
+<div class="card">
 
-      <div class="grid">
-        <!-- left: register -->
-        <div>
-          <div style="font-weight:700;margin-bottom:8px">ثبت‌نام</div>
+<h1>Team Shuffle</h1>
 
-          <div id="step-name">
-            <div class="form-row">
-              <input id="nameInput" type="text" placeholder="نام و نام‌خانوادگی (فارسی یا انگلیسی)" />
-            </div>
-            <div class="form-row">
-              <button id="toRole" class="btn">ادامه</button>
-            </div>
-          </div>
+<input id="name" placeholder="نام خود را وارد کنید">
 
-          <div id="step-role" style="display:none">
-            <div style="font-weight:700;margin-bottom:8px">نقش</div>
-            <div class="roles">
-              <div id="rolePlayer" class="role player" data-role="player">⚽ بازیکن</div>
-              <div id="roleGk" class="role gk" data-role="gk">🧤 دروازه‌بان</div>
-            </div>
-            <div>
-              <button id="registerBtn" class="btn">ثبت</button>
-            </div>
-          </div>
+<div class="roles">
+  <div class="role" data-role="player">⚽ بازیکن</div>
+  <div class="role" data-role="gk">🧤 دروازه‌بان</div>
+</div>
 
-          <div id="msg" style="margin-top:10px;display:none;padding:8px;border-radius:8px"></div>
+<button onclick="register()">ثبت</button>
 
-          <div style="margin-top:12px" class="small-note">پس از ثبت نام، اسم شما در لیست ذخیره می‌شود و امکان ثبت دوباره وجود ندارد تا زمانی که ادمین ریست کند.</div>
-        </div>
-
-        <!-- right: lists -->
-        <div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div style="font-weight:700;color:var(--accent-yellow)">لیست ثبت‌شده‌ها</div>
-            <div class="counter" id="count">0</div>
-          </div>
-
-          <div class="list" id="rawList"></div>
-
-          <div style="height:10px"></div>
-
-          <div style="font-weight:700;color:var(--accent-yellow)">تیم‌ها</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-            <div class="list" style="padding:8px">
-              <div style="font-weight:700">🔵 تیم A</div>
-              <ul id="teamA"></ul>
-              <div style="font-size:13px;color:var(--muted);margin-top:6px">تعویضی‌های A</div>
-              <ul id="subsA"></ul>
-            </div>
-            <div class="list" style="padding:8px">
-              <div style="font-weight:700">🔴 تیم B</div>
-              <ul id="teamB"></ul>
-              <div style="font-size:13px;color:var(--muted);margin-top:6px">تعویضی‌های B</div>
-              <ul id="subsB"></ul>
-            </div>
-          </div>
-
-          <div class="footer" style="margin-top:10px">
-            <div class="small-note">حداکثر هر تیم: ۵ نفر (شامل GK)</div>
-            <button id="resetBtn" class="reset-btn">🔐 Reset (ادمین)</button>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="teams">
+  <div class="team">
+    <h3>🔵 تیم A</h3>
+    <ul id="teamA"></ul>
+    <div class="subs-title">تعویضی A</div>
+    <ul id="subsA"></ul>
+  </div>
+  <div class="team">
+    <h3>🔴 تیم B</h3>
+    <ul id="teamB"></ul>
+    <div class="subs-title">تعویضی B</div>
+    <ul id="subsB"></ul>
   </div>
 </div>
 
-<!-- admin modal -->
-<div id="modal" class="modal-back">
-  <div class="modal">
-    <h4>رمز مدیر را وارد کنید</h4>
-    <input id="adminInput" type="password" placeholder="رمز" />
-    <div id="adminError" style="color:var(--accent-red);display:none;margin-bottom:8px;font-size:13px"></div>
-    <div style="display:flex;justify-content:flex-end;gap:8px">
-      <button id="cancelAdmin" class="small">انصراف</button>
-      <button id="confirmAdmin" class="btn">تایید</button>
-    </div>
-  </div>
+<button class="reset" onclick="resetAll()">🔐 ریست (ادمین)</button>
+
+</div>
 </div>
 
 <script>
-/* Thin, final client-side offline implementation
-   - Put your background image file as bg.jpg next to this HTML
-   - Admin password (client-side offline): admin12345
-*/
-const ADMIN_PASSWORD = 'admin12345';
-const KEY_PLAYERS = 'TS_PLAYERS_V1';
-const KEY_DEVICE = 'TS_DEVICE_ID_V1';
+const PASS="admin12345";
+const KEY="players_v3";
+const DEV="device_v3";
+if(!localStorage.getItem(DEV))
+  localStorage.setItem(DEV,Math.random().toString(36));
 
-function makeDeviceId(){
-  let id = localStorage.getItem(KEY_DEVICE);
-  if(!id){
-    id = Date.now().toString(36) + Math.random().toString(36).slice(2,8);
-    localStorage.setItem(KEY_DEVICE, id);
-  }
-  return id;
-}
-const DEVICE_ID = makeDeviceId();
-
-function loadPlayers(){ try{ const r = localStorage.getItem(KEY_PLAYERS); return r?JSON.parse(r):[] }catch(e){return[]} }
-function savePlayers(a){ localStorage.setItem(KEY_PLAYERS, JSON.stringify(a)) }
-function clearPlayers(){ localStorage.removeItem(KEY_PLAYERS) }
-
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } }
-
-function assignTwo(players){
-  // returns {teamA, teamB, subsA, subsB}
-  const gks = players.filter(p=>p.role==='gk').slice();
-  const field = players.filter(p=>p.role==='player').slice();
-  shuffle(gks); shuffle(field);
-
-  const teamA = [], teamB = [], subsA = [], subsB = [];
-
-  if(gks.length>0) teamA.push(gks.shift());
-  if(gks.length>0) teamB.push(gks.shift());
-
-  let turn = 0;
-  for(const p of field){
-    const aSize = teamA.length;
-    const bSize = teamB.length;
-    if(aSize < 5 && bSize < 5){
-      if(turn % 2 === 0) teamA.push(p); else teamB.push(p);
-      turn++;
-    } else if(aSize < 5){
-      teamA.push(p);
-    } else if(bSize < 5){
-      teamB.push(p);
-    } else {
-      // both full -> assign to smaller subs
-      if(subsA.length <= subsB.length) subsA.push(p); else subsB.push(p);
-    }
-  }
-
-  // leftover gks -> subs (distribute)
-  while(gks.length>0){
-    const p = gks.shift();
-    if(subsA.length <= subsB.length) subsA.push(p); else subsB.push(p);
-  }
-
-  // balance diff <=1 by moving players (not GK) if needed
-  let safety = 0;
-  while(Math.abs(teamA.length - teamB.length) > 1 && safety < 40){
-    if(teamA.length > teamB.length){
-      const idx = teamA.findIndex(x=>x.role==='player');
-      if(idx>=0){ const moved = teamA.splice(idx,1)[0]; teamB.push(moved); }
-      else break;
-    } else {
-      const idx = teamB.findIndex(x=>x.role==='player');
-      if(idx>=0){ const moved = teamB.splice(idx,1)[0]; teamA.push(moved); }
-      else break;
-    }
-    safety++;
-  }
-
-  return { teamA, teamB, subsA, subsB };
-}
-
-/* UI wiring */
-const splash = document.getElementById('splash');
-setTimeout(()=>splash.classList.add('hidden'),1000);
-
-const toRole = document.getElementById('toRole');
-const nameInput = document.getElementById('nameInput');
-const stepName = document.getElementById('step-name');
-const stepRole = document.getElementById('step-role');
-const rolePlayer = document.getElementById('rolePlayer');
-const roleGk = document.getElementById('roleGk');
-const registerBtn = document.getElementById('registerBtn');
-const msg = document.getElementById('msg');
-
-const rawList = document.getElementById('rawList');
-const countEl = document.getElementById('count');
-const teamAEl = document.getElementById('teamA');
-const teamBEl = document.getElementById('teamB');
-const subsAEl = document.getElementById('subsA');
-const subsBEl = document.getElementById('subsB');
-
-let selectedRole = null;
-
-toRole.addEventListener('click', ()=>{
-  if((nameInput.value||'').trim()===''){ showMsg('نام را وارد کنید','err'); return; }
-  stepName.style.display='none';
-  stepRole.style.display='block';
+let role=null;
+document.querySelectorAll(".role").forEach(r=>{
+  r.onclick=()=>{document.querySelectorAll(".role").forEach(x=>x.classList.remove("active"));r.classList.add("active");role=r.dataset.role}
 });
 
-[rolePlayer,roleGk].forEach(el=>{
-  el.addEventListener('click', ()=>{
-    [rolePlayer,roleGk].forEach(x=>x.classList.remove('active'));
-    el.classList.add('active'); selectedRole = el.dataset.role;
-  });
-});
-
-registerBtn.addEventListener('click', ()=>{
-  const name = (nameInput.value||'').trim();
-  if(!name){ showMsg('نام را وارد کنید','err'); return; }
-  if(!selectedRole){ showMsg('نقش را انتخاب کنید','err'); return; }
-  const players = loadPlayers();
-  if(players.some(p=>p.deviceId===DEVICE_ID)){ showMsg('این دستگاه قبلاً ثبت شده','err'); return; }
-  const entry = { id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), deviceId: DEVICE_ID, name, role: selectedRole };
-  players.push(entry); savePlayers(players);
-  nameInput.value=''; [rolePlayer,roleGk].forEach(x=>x.classList.remove('active')); selectedRole=null;
-  stepRole.style.display='none'; stepName.style.display='block';
-  showMsg('ثبت شد ✅','ok');
+function register(){
+  const name=document.getElementById("name").value.trim();
+  if(!name||!role)return alert("نام و نقش را وارد کنید");
+  let p=JSON.parse(localStorage.getItem(KEY)||"[]");
+  if(p.some(x=>x.d===localStorage.getItem(DEV)))
+    return alert("قبلاً ثبت کرده‌اید");
+  p.push({n:name,r:role,d:localStorage.getItem(DEV)});
+  localStorage.setItem(KEY,JSON.stringify(p));
   render();
-});
-
-function showMsg(t, type){
-  msg.style.display='block'; msg.textContent=t;
-  msg.style.background = type==='ok'? 'linear-gradient(90deg, rgba(0,210,122,0.06), rgba(0,179,255,0.04))' : 'rgba(255,75,75,0.06)';
-  msg.style.color = type==='ok'? 'var(--accent-green)': 'var(--accent-red)';
-  setTimeout(()=> msg.style.display='none',3000);
 }
-
-function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function render(){
-  const players = loadPlayers();
-  rawList.innerHTML='';
-  if(players.length===0) rawList.innerHTML = '<div style="color:var(--muted)">هیچ‌کس ثبت نشده</div>';
-  else players.forEach(p=>{
-    const li = document.createElement('li');
-    li.innerHTML = `<span>${escapeHtml(p.name)}</span><span class="badge">${p.role==='gk'?'🧤':'⚽'}</span>`;
-    rawList.appendChild(li);
-  });
-  countEl.textContent = players.length;
-
-  const res = assignTwo(players);
-  // clear teams
-  teamAEl.innerHTML = ''; teamBEl.innerHTML = ''; subsAEl.innerHTML=''; subsBEl.innerHTML='';
-  if(res.teamA.length===0) teamAEl.innerHTML='<li style="color:var(--muted)">—</li>'; else res.teamA.forEach(p=>{ const li=document.createElement('li'); li.innerHTML=`<span>${escapeHtml(p.name)}</span><span class="badge">${p.role==='gk'?'🧤':'⚽'}</span>`; teamAEl.appendChild(li); });
-  if(res.teamB.length===0) teamBEl.innerHTML='<li style="color:var(--muted)">—</li>'; else res.teamB.forEach(p=>{ const li=document.createElement('li'); li.innerHTML=`<span>${escapeHtml(p.name)}</span><span class="badge">${p.role==='gk'?'🧤':'⚽'}</span>`; teamBEl.appendChild(li); });
-  if(res.subsA.length===0) subsAEl.innerHTML='<li style="color:var(--muted)">—</li>'; else res.subsA.forEach(p=>{ const li=document.createElement('li'); li.innerHTML=`<span>${escapeHtml(p.name)}</span><span class="badge">🔁</span>`; subsAEl.appendChild(li); });
-  if(res.subsB.length===0) subsBEl.innerHTML='<li style="color:var(--muted)">—</li>'; else res.subsB.forEach(p=>{ const li=document.createElement('li'); li.innerHTML=`<span>${escapeHtml(p.name)}</span><span class="badge">🔁</span>`; subsBEl.appendChild(li); });
+  const p=JSON.parse(localStorage.getItem(KEY)||"[]");
+  let A=[],B=[],SA=[],SB=[];
+  let gk=p.filter(x=>x.r=="gk"),pl=p.filter(x=>x.r=="player");
+  shuffle(gk);shuffle(pl);
+  if(gk[0])A.push(gk.shift());
+  if(gk[0])B.push(gk.shift());
+  for(let x of pl){
+    if(A.length<5&&B.length<5)(A.length<=B.length?A:B).push(x);
+    else (SA.length<=SB.length?SA:SB).push(x);
+  }
+  draw("teamA",A);draw("teamB",B);draw("subsA",SA);draw("subsB",SB);
 }
-
+function draw(id,a){
+  const ul=document.getElementById(id);ul.innerHTML="";
+  a.forEach(x=>ul.innerHTML+=`<li>${x.n}</li>`);
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}
+function resetAll(){
+  const p=prompt("رمز ادمین:");
+  if(p===PASS){localStorage.clear();location.reload()}
+}
 render();
-
-/* admin reset */
-const resetBtn = document.getElementById('resetBtn');
-const modal = document.getElementById('modal');
-const adminInput = document.getElementById('adminInput');
-const confirmAdmin = document.getElementById('confirmAdmin');
-const cancelAdmin = document.getElementById('cancelAdmin');
-const adminError = document.getElementById('adminError');
-
-resetBtn.addEventListener('click', ()=>{ adminInput.value=''; adminError.style.display='none'; modal.style.display='flex'; setTimeout(()=>adminInput.focus(),120); });
-cancelAdmin.addEventListener('click', ()=>{ modal.style.display='none'; adminError.style.display='none'; });
-
-confirmAdmin.addEventListener('click', ()=>{
-  const v = (adminInput.value||'').trim();
-  if(!v){ adminError.textContent='رمز را وارد کنید'; adminError.style.display='block'; return; }
-  if(v !== ADMIN_PASSWORD){ adminError.textContent='رمز اشتباه است'; adminError.style.display='block'; return; }
-  clearPlayers();
-  modal.style.display='none';
-  showMsg('فهرست پاک شد','ok');
-  render();
-});
 </script>
+
 </body>
 </html>

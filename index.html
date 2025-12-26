@@ -1,188 +1,433 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Team Randomizer</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Random Team</title>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
 <style>
-body{
-margin:0;
-font-family:sans-serif;
-background:linear-gradient(135deg,#141e30,#243b55);
-color:#fff;
-}
-.container{max-width:420px;margin:auto;padding:15px}
-.card{
-background:rgba(255,255,255,.1);
-backdrop-filter:blur(14px);
-border-radius:22px;
-padding:20px;
-box-shadow:0 20px 40px rgba(0,0,0,.6);
-margin-bottom:15px;
-}
-h2,h3{text-align:center}
+  :root{
+    --bg1:#081226; --bg2:#071428;
+    --accent-blue:#00A3FF; --accent-deep:#0B5486;
+    --accent-red:#FF3B3B; --accent-green:#2EE59D;
+    --gold:#FFC857;
+    --card: rgba(255,255,255,0.04);
+    --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box;font-family:"Vazirmatn",Tahoma,Arial}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#fff}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .shell{
+    width:100%;max-width:1024px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12));
+    border-radius:16px;padding:18px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    display:grid;grid-template-columns: 420px 1fr;gap:18px;
+  }
 
-/* 🔥 دکمه‌های دینامیکی */
-button{
-width:100%;
-padding:14px;
-border:none;
-border-radius:16px;
-font-size:15px;
-font-weight:bold;
-cursor:pointer;
-background:linear-gradient(135deg,#00c6ff,#0072ff);
-color:#fff;
-box-shadow:0 10px 25px rgba(0,114,255,.6);
-transition:.2s;
-}
-button:active{
-transform:scale(.95);
-box-shadow:0 5px 15px rgba(0,114,255,.8);
-}
-button:hover{filter:brightness(1.1)}
+  /* Loader (ball animation) */
+  #loader{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:transparent;z-index:9999;pointer-events:none;
+  }
+  .ball{
+    width:110px;height:110px;border-radius:50%;
+    background:conic-gradient(#fff 0 30%, #0000 0 100%);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6), inset 0 -6px 24px rgba(0,0,0,0.25);
+    animation:ballSpin .5s linear forwards;
+  }
+  @keyframes ballSpin{0%{transform:scale(1) rotate(0)}50%{transform:scale(.6) rotate(180deg)}100%{transform:scale(.9) rotate(360deg);opacity:0}}
 
-input{
-width:100%;
-padding:14px;
-border-radius:14px;
-border:none;
-margin-top:10px;
-}
-.roles{
-display:flex;
-gap:10px;
-margin-top:10px;
-}
-.roles label{
-flex:1;
-background:#fff;
-color:#000;
-padding:10px;
-border-radius:12px;
-text-align:center;
-}
-.top{
-display:flex;
-gap:10px;
-margin-bottom:10px;
-}
-ul{list-style:none;padding:0}
-li{
-background:rgba(255,255,255,.15);
-margin-top:6px;
-padding:8px;
-border-radius:10px;
-}
-.hidden{display:none}
+  /* Left panel (form) */
+  .panel{
+    background:var(--card);padding:18px;border-radius:12px;backdrop-filter: blur(6px);
+    display:flex;flex-direction:column;gap:10px;min-height:360px;
+  }
+  h1{margin:6px 0 2px;font-size:20px;color:var(--accent-blue)}
+  p.small{margin:0;color:#bcd; font-size:13px}
+
+  input[type="text"]{
+    width:100%;padding:12px;border-radius:10px;border:none;background:var(--glass);color:#fff;font-size:15px;
+  }
+
+  .roles{display:flex;gap:8px;margin-top:6px}
+  .role-btn{flex:1;padding:12px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+  .role-player{background:linear-gradient(135deg,var(--accent-blue),#3ec5ff); color:#021426}
+  .role-gk{background:linear-gradient(135deg,var(--accent-red),#ff7b7b); color:#250b0b}
+
+  .submit{
+    margin-top:8px;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent-green),#02bfa3);
+    color:#022; font-weight:800;cursor:pointer; box-shadow: 0 8px 18px rgba(2,195,150,0.12);
+  }
+
+  .msg{
+    padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);color:#d8f7ee;font-weight:600;
+  }
+
+  /* top small admin controls */
+  .admin-controls{
+    display:flex;justify-content:flex-end;gap:8px;align-items:center;
+  }
+  .admin-btn{background:var(--gold);color:#102; padding:6px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:13px}
+  .mini{font-size:12px;color:#ddd;opacity:.8}
+
+  /* right panel (teams) */
+  .board{background:rgba(255,255,255,0.02);padding:18px;border-radius:12px;min-height:360px;display:flex;flex-direction:column;gap:12px}
+  .teams{display:flex;gap:12px}
+  .team{
+    flex:1;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.08));
+    min-height:120px;box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+  }
+  .team h3{margin:0 0 8px;font-size:16px}
+  .member{display:flex;align-items:center;gap:8px;padding:6px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.02)}
+  .member .role{font-size:12px;padding:4px 8px;border-radius:6px;font-weight:700}
+  .role-player-mini{background:linear-gradient(90deg,var(--accent-blue),#58d7ff); color:#021426}
+  .role-gk-mini{background:linear-gradient(90deg,var(--accent-red),#ff8b8b); color:#250b0b}
+  .member .name{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .subs{margin-top:6px;font-size:13px;color:#cde}
+  .stats{font-size:13px;color:#cfe;opacity:.9;margin-top:auto}
+
+  /* responsiveness */
+  @media(max-width:900px){
+    .shell{grid-template-columns:1fr; padding:14px}
+    .ball{width:90px;height:90px}
+  }
 </style>
 </head>
 
 <body>
-<div class="container">
 
-<div class="top">
-<button onclick="adminReset()">ریست</button>
-<button onclick="adminShuffle()">شانسی دوباره</button>
-</div>
+<!-- Loader (half-second ball) -->
+<div id="loader"><div class="ball"></div></div>
 
-<div id="form" class="card">
-<h2>ثبت نام</h2>
-<input id="name" placeholder="نام">
-<div class="roles">
-<label><input type="radio" name="role" value="player" checked> بازیکن</label>
-<label><input type="radio" name="role" value="goalkeeper"> دروازه‌بان</label>
-</div>
-<button onclick="register()">ثبت</button>
-</div>
+<div class="wrap">
+  <div class="shell">
 
-<div class="card">
-<h3>تیم A</h3>
-<ul id="A"></ul>
-<h3>تیم B</h3>
-<ul id="B"></ul>
-</div>
+    <!-- LEFT: form -->
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h1>Random Team</h1>
+          <p class="mini">ثبت نام سریع — هر دستگاه فقط یک‌بار</p>
+        </div>
+        <div class="admin-controls">
+          <button class="admin-btn" id="shuffleBtn" title="Shuffle (admin)">Shuffle</button>
+          <button class="admin-btn" id="resetBtn" title="Reset (admin)">Reset</button>
+        </div>
+      </div>
 
+      <div id="stepArea">
+        <!-- Step 1: name -->
+        <div id="step1">
+          <p class="mini">نام و نام‌خانوادگی را وارد کن (فارسی یا انگلیسی)</p>
+          <input id="nameInput" type="text" placeholder="مثال: علی رضایی" maxlength="60" />
+          <div style="height:8px"></div>
+          <!-- role selection -->
+          <div class="roles">
+            <button id="btnPlayer" class="role-btn role-player">بازیکن</button>
+            <button id="btnGk" class="role-btn role-gk">دروازه‌بان</button>
+          </div>
+          <button class="submit" id="submitBtn">ثبت و پیوستن</button>
+        </div>
+
+      </div>
+
+      <div id="message" class="msg hidden"></div>
+      <div style="height:6px"></div>
+      <div class="mini">توضیحات مختصر: هر تیم حداکثر ۵ نفر (شامل GK) — اضافه‌ها تعویضی می‌شوند.</div>
+    </div>
+
+    <!-- RIGHT: teams board -->
+    <div class="board">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h3 style="margin:0">وضعیت تیم‌ها</h3>
+          <div class="mini">نمایش زنده شرکت‌کنندگان</div>
+        </div>
+      </div>
+
+      <div class="teams">
+        <div class="team" id="teamA">
+          <h3>تیم A</h3>
+          <div id="teamAList"></div>
+          <div class="subs" id="teamASubs"></div>
+        </div>
+        <div class="team" id="teamB">
+          <h3>تیم B</h3>
+          <div id="teamBList"></div>
+          <div class="subs" id="teamBSubs"></div>
+        </div>
+      </div>
+
+      <div class="stats" id="statsArea">بارگذاری...</div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-const firebaseConfig={
-apiKey:"XXXX",
-authDomain:"XXXX",
-projectId:"XXXX"
-};
-firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-const ADMIN="admin12345";
+/*
+  >> قبل از اجرا: این دو مقدار را با مقادیر Supabase خودت جایگزین کن <<
+  SUPABASE_URL      -> آدرس پروژه Supabase (مثلاً https://xyz.supabase.co)
+  SUPABASE_ANON_KEY -> public anon key از Project Settings -> API
+*/
+const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co'; // <-- جایگزین کن
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // <-- جایگزین کن
 
-const deviceId=localStorage.did||(localStorage.did=Math.random().toString(36));
+// init supabase
+const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-async function init(){
-await db.doc("teams/A").set({gk:null,p:[],s:[]},{merge:true});
-await db.doc("teams/B").set({gk:null,p:[],s:[]},{merge:true});
+// helper: create/get device id (localStorage)
+function getDeviceId(){
+  let id = localStorage.getItem('rt_device');
+  if(!id){
+    id = 'd_' + ([1e7]+-1e3+-4e3+-8e3+-1e11).toString().replace(/[018]/g,c=>(c^crypto.getRandomValues(new Uint8Array(1))[0]&15>>c/4).toString(16));
+    localStorage.setItem('rt_device', id);
+  }
+  return id;
 }
-init();
+const DEVICE_ID = getDeviceId();
 
-db.doc("meta/lock").get().then(d=>{
-if(d.exists && d.data()[deviceId]) form.classList.add("hidden");
-});
+// UI refs
+const loader = document.getElementById('loader');
+const nameInput = document.getElementById('nameInput');
+const btnPlayer = document.getElementById('btnPlayer');
+const btnGk = document.getElementById('btnGk');
+const submitBtn = document.getElementById('submitBtn');
+const message = document.getElementById('message');
+const statsArea = document.getElementById('statsArea');
+const teamAList = document.getElementById('teamAList');
+const teamBList = document.getElementById('teamBList');
+const teamASubs = document.getElementById('teamASubs');
+const teamBSubs = document.getElementById('teamBSubs');
+const shuffleBtn = document.getElementById('shuffleBtn');
+const resetBtn = document.getElementById('resetBtn');
 
-db.collection("teams").onSnapshot(render);
+let chosenRole = 'player'; // default
 
-async function register(){
-const n=name.value.trim();
-if(!n) return alert("نام وارد کن");
+// small UI interactions
+btnPlayer.onclick = () => { chosenRole='player'; btnPlayer.style.filter='saturate(1.1)'; btnGk.style.filter='none'; };
+btnGk.onclick = () => { chosenRole='gk'; btnGk.style.filter='saturate(1.1)'; btnPlayer.style.filter='none'; };
+btnPlayer.click(); // default selected
 
-const r=document.querySelector('input[name=role]:checked').value;
-const order=["A","B"].sort(()=>Math.random()-.5);
+submitBtn.onclick = onSubmit;
+shuffleBtn.onclick = onAdminShuffle;
+resetBtn.onclick = onAdminReset;
 
-for(let t of order){
-let ref=db.doc("teams/"+t);
-let d=(await ref.get()).data();
+// show loader for 0.6s then hide
+setTimeout(()=>{ loader.style.display='none'; }, 600);
 
-if(r==="goalkeeper" && !d.gk){
-d.gk=n+" 🧤";
-await ref.set(d);
-lock();return;
-}
-if(r==="player"){
-if(d.p.length<5){d.p.push(n);await ref.set(d);lock();return;}
-else{d.s.push(n+" 🔄");await ref.set(d);lock();return;}
-}
-}
-alert("ظرفیت پره");
-}
-
-function lock(){
-db.doc("meta/lock").set({[deviceId]:true},{merge:true});
-form.classList.add("hidden");
-}
-
-function render(snap){
-["A","B"].forEach(x=>document.getElementById(x).innerHTML="");
-snap.forEach(doc=>{
-let d=doc.data(),ul=document.getElementById(doc.id);
-if(d.gk) ul.innerHTML+=`<li>${d.gk}</li>`;
-d.p.forEach(x=>ul.innerHTML+=`<li>${x}</li>`);
-d.s.forEach(x=>ul.innerHTML+=`<li>${x}</li>`);
-});
+// utility shuffle
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
 }
 
-function adminReset(){
-if(prompt("رمز")!==ADMIN) return;
-["A","B"].forEach(t=>db.doc("teams/"+t).set({gk:null,p:[],s:[]}));
-db.doc("meta/lock").delete();
-location.reload();
+// fetch all entries
+async function fetchAll(){
+  const { data, error } = await supabase.from('players').select('*').order('created_at', {ascending:true});
+  if(error){ console.error(error); return []; }
+  return data || [];
 }
 
-function adminShuffle(){
-if(prompt("رمز")!==ADMIN) return;
-adminReset();
+// render teams based on DB entries (we rely on assigned team saved in DB)
+function render(list){
+  // clear
+  teamAList.innerHTML=''; teamBList.innerHTML=''; teamASubs.innerHTML=''; teamBSubs.innerHTML='';
+  // split by team and sub flag
+  const tA = list.filter(x=>x.team==='A' && !x.is_sub);
+  const tB = list.filter(x=>x.team==='B' && !x.is_sub);
+  const sA = list.filter(x=>x.team==='A' && x.is_sub);
+  const sB = list.filter(x=>x.team==='B' && x.is_sub);
+
+  function createMemberEl(p){
+    const div = document.createElement('div'); div.className='member';
+    const role = document.createElement('span'); role.className='role ' + (p.role==='gk'?'role-gk-mini':'role-player-mini'); role.textContent = (p.role==='gk'?'GK':'بازیکن');
+    const nm = document.createElement('div'); nm.className='name'; nm.textContent = p.name;
+    div.appendChild(role); div.appendChild(nm);
+    return div;
+  }
+
+  for(const p of tA) teamAList.appendChild(createMemberEl(p));
+  for(const p of tB) teamBList.appendChild(createMemberEl(p));
+
+  // subs
+  if(sA.length) teamASubs.textContent = 'تعویضی‌ها: ' + sA.map(x=>x.name).join(' , ');
+  if(sB.length) teamBSubs.textContent = 'تعویضی‌ها: ' + sB.map(x=>x.name).join(' , ');
+
+  statsArea.textContent = `کل ثبت‌شده: ${list.length} — تیمA: ${tA.length} (${sA.length} تعویض) — تیمB: ${tB.length} (${sB.length} تعویض)`;
 }
+
+// determine placement for a new user given existing list
+function decidePlacement(list, role){
+  // build current team arrays
+  const aMembers = list.filter(x=>x.team==='A' && !x.is_sub);
+  const bMembers = list.filter(x=>x.team==='B' && !x.is_sub);
+  const aGk = aMembers.some(x=>x.role==='gk');
+  const bGk = bMembers.some(x=>x.role==='gk');
+
+  // helper counts
+  const aCount = aMembers.length; const bCount = bMembers.length;
+
+  // if role is gk: prefer team without GK and with space (<5)
+  if(role==='gk'){
+    const candidates = [];
+    if(!aGk && aCount < 5) candidates.push('A');
+    if(!bGk && bCount < 5) candidates.push('B');
+    if(candidates.length){
+      return { team: candidates[Math.floor(Math.random()*candidates.length)], is_sub:false };
+    }
+    // no team available without GK -> put as sub into team with smaller subs
+    const aSubs = list.filter(x=>x.team==='A' && x.is_sub).length;
+    const bSubs = list.filter(x=>x.team==='B' && x.is_sub).length;
+    return { team: aSubs <= bSubs ? 'A' : 'B', is_sub:true };
+  }
+
+  // role player: try to place in team with smaller size and <5
+  const minSize = Math.min(aCount, bCount);
+  const candidates = [];
+  if(aCount === minSize && aCount < 5) candidates.push('A');
+  if(bCount === minSize && bCount < 5) candidates.push('B');
+  if(candidates.length){
+    return { team: candidates[Math.floor(Math.random()*candidates.length)], is_sub:false };
+  }
+  // if both are full or cannot place -> put to subs on team with fewer subs
+  const aSubs = list.filter(x=>x.team==='A' && x.is_sub).length;
+  const bSubs = list.filter(x=>x.team==='B' && x.is_sub).length;
+  // ensure subs assigned alternately
+  return { team: aSubs <= bSubs ? 'A' : 'B', is_sub:true };
+}
+
+// submit handler
+async function onSubmit(){
+  const name = (nameInput.value||'').trim();
+  if(!name){ showMsg('لطفاً نام را وارد کن'); return; }
+  // check device registration
+  const { data:exists, error:errCheck } = await supabase.from('players').select('id').eq('device_id', DEVICE_ID).limit(1);
+  if(errCheck){ console.error(errCheck); showMsg('خطا در بررسی ثبت'); return; }
+  if(exists && exists.length>0){ showMsg('شما قبلاً ثبت شده‌اید'); return; }
+
+  // fetch current list
+  const all = await fetchAll();
+
+  // decide placement
+  const placement = decidePlacement(all, chosenRole);
+  // prepare record
+  const rec = { name: name, role: chosenRole, device_id: DEVICE_ID, team: placement.team, is_sub: placement.is_sub };
+
+  // insert
+  const { data, error } = await supabase.from('players').insert(rec).select().single();
+  if(error){ console.error(error); showMsg('خطا در ثبت'); return; }
+
+  showMsg('درخواست شما ثبت شد ✅', true);
+  // update UI immediately
+  refreshNow();
+  // disable further submissions locally
+  // (server-side check already prevents double insert)
+  submitBtn.disabled = true;
+}
+
+// message display
+function showMsg(txt, success=false){
+  message.classList.remove('hidden'); message.textContent = txt;
+  message.style.background = success? 'linear-gradient(90deg,#1ee59d,#12b07a)' : 'rgba(255,255,255,0.03)';
+  setTimeout(()=>{ message.classList.add('hidden'); }, 4000);
+}
+
+// admin shuffle: reassign all players randomly while respecting rules
+async function onAdminShuffle(){
+  const pwd = prompt('رمز ادمین را وارد کنید:');
+  if(pwd !== 'admin12345'){ alert('رمز نادرست'); return; }
+  // fetch all
+  const all = await fetchAll();
+  if(!all.length){ alert('هیچ موردی ثبت نشده'); return; }
+
+  // separate gks and players in random order
+  const gks = shuffle(all.filter(x=>x.role==='gk' && !x.is_sub));
+  const players = shuffle(all.filter(x=>x.role!=='gk' || x.is_sub));
+
+  // ensure enough GK? If less than 2, some teams will lack gk (per earlier rules)
+  // create new teams arrays
+  const newTeams = {A:[], B:[], A_sub:[], B_sub:[]};
+
+  // place GK first: one per team if possible
+  for(let i=0;i<2;i++){
+    const teamKey = i===0? 'A':'B';
+    if(gks.length>0){
+      const g = gks.shift();
+      newTeams[teamKey].push({...g, role:'gk'});
+    }
+  }
+  // place players round-robin respecting max 5 per team
+  let idx=0;
+  for(const p of players){
+    const teamKey = idx % 2 === 0 ? 'A' : 'B';
+    if(newTeams[teamKey].length < 5){
+      newTeams[teamKey].push(p);
+    } else {
+      newTeams[teamKey + '_sub'].push(p);
+    }
+    idx++;
+  }
+
+  // Now update DB: we'll update each row's team and is_sub fields
+  // Build update promises
+  for(const r of all){
+    // find new location in newTeams
+    let found = null;
+    const checkAndPop = (arr, id)=>{ const i = arr.findIndex(x=>x.id === id); if(i>=0) return arr[i]; return null; };
+    // search main teams
+    found = checkAndPop(newTeams.A, r.id) || checkAndPop(newTeams.B, r.id) || checkAndPop(newTeams.A_sub, r.id) || checkAndPop(newTeams.B_sub, r.id);
+    if(found){
+      // determine flags
+      let newTeam = 'A', newSub=false;
+      if(checkAndPop(newTeams.B, r.id)) { newTeam='B'; newSub=false; }
+      if(checkAndPop(newTeams.A_sub, r.id)) { newTeam='A'; newSub=true; }
+      if(checkAndPop(newTeams.B_sub, r.id)) { newTeam='B'; newSub=true; }
+      // update row
+      await supabase.from('players').update({ team:newTeam, is_sub:newSub }).eq('id', r.id);
+    }
+  }
+  alert('بازچینی انجام شد');
+  refreshNow();
+}
+
+// admin reset: delete all
+async function onAdminReset(){
+  const pwd = prompt('رمز ادمین را وارد کنید:');
+  if(pwd !== 'admin12345'){ alert('رمز نادرست'); return; }
+  if(!confirm('آیا مطمئنی همهٔ ثبت‌ها حذف شوند؟')) return;
+  const { error } = await supabase.from('players').delete().neq('id', ''); // delete all
+  if(error){ console.error(error); alert('خطا در حذف'); return; }
+  alert('همهٔ داده‌ها حذف شد');
+  refreshNow();
+}
+
+// refresh display by fetching all
+let polling = null;
+async function refreshNow(){
+  const all = await fetchAll();
+  render(all);
+}
+async function startPolling(){
+  await refreshNow();
+  if(polling) clearInterval(polling);
+  polling = setInterval(refreshNow, 2000);
+}
+startPolling();
+
+// On load: disable submit if already registered
+(async function init(){
+  const { data } = await supabase.from('players').select('id').eq('device_id', DEVICE_ID).limit(1);
+  if(data && data.length>0) submitBtn.disabled = true;
+})();
+
 </script>
 </body>
 </html>

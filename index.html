@@ -1,262 +1,215 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Random Team — Live</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Team</title>
 
-<!-- Firebase compat (Realtime DB) -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <style>
-  *{box-sizing:border-box;font-family: Vazirmatn, Tahoma, Arial; }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,#071233,#001428);color:#eef;display:flex;align-items:center;justify-content:center}
-  #loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;z-index:999}
-  .ball{font-size:88px;animation:spin .5s linear}
-  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg);opacity:0}}
-  .wrap{width:95%;max-width:980px;padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.18));box-shadow:0 30px 80px rgba(0,0,0,0.6)}
-  .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-  .admin-mini{display:flex;gap:8px}
-  .admin-mini button{padding:6px 8px;border-radius:8px;border:none;background:#f6b500;color:#000;font-weight:700;cursor:pointer;font-size:13px;opacity:.9}
-  .grid{display:grid;grid-template-columns:360px 1fr;gap:16px}
-  @media(max-width:900px){.grid{grid-template-columns:1fr}}
-  .card{background:rgba(255,255,255,0.02);padding:12px;border-radius:12px}
-  .input{width:100%;padding:12px;border-radius:10px;border:none;background:rgba(255,255,255,0.03);color:inherit;font-size:15px}
-  .btn{width:100%;padding:12px;border-radius:10px;border:none;margin-top:10px;font-weight:800;cursor:pointer}
-  .btn.player{background:linear-gradient(90deg,#2b8af6,#60a5fa);color:#fff}
-  .btn.gk{background:linear-gradient(90deg,#fb6b6b,#e34b4b);color:#fff}
-  .teams{display:flex;gap:12px}
-  .team{flex:1;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));padding:10px;border-radius:10px;min-height:220px}
-  .team h3{margin:6px 0 10px}
-  .list{list-style:none;padding:0;margin:0;max-height:420px;overflow:auto}
-  .item{padding:6px 8px;border-radius:8px;margin-bottom:6px;background:rgba(0,0,0,0.18);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .sub{opacity:.9;color:#ffd166}
-  .note{font-size:13px;color:rgba(255,255,255,0.7);margin-top:8px}
+*{box-sizing:border-box;font-family:tahoma}
+body{
+margin:0;
+background:radial-gradient(circle at top,#1e88e5,#0d1b2a,#000);
+color:#fff;
+min-height:100vh;
+overflow-x:hidden;
+}
+#loader{
+position:fixed;inset:0;
+display:flex;align-items:center;justify-content:center;
+background:#000;z-index:10;
+}
+.ball{
+width:80px;height:80px;border-radius:50%;
+background:radial-gradient(circle,#fff 30%,#000 31%);
+animation:spin .5s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.container{max-width:420px;margin:auto;padding:12px}
+h1{text-align:center;margin:8px 0;font-size:22px}
+
+.card{
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(8px);
+border-radius:16px;
+padding:14px;
+box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+
+input{
+width:100%;padding:12px;border-radius:10px;
+border:none;font-size:16px;margin-bottom:10px;
+}
+
+.btn{
+width:100%;padding:12px;border:none;
+border-radius:12px;font-size:16px;
+cursor:pointer;color:#fff;
+margin-top:6px;
+}
+
+.player{background:#2196f3}
+.keeper{background:#e53935}
+.submit{
+background:linear-gradient(135deg,#00c853,#00b0ff);
+font-weight:bold;
+}
+
+.hidden{display:none}
+
+.teams{
+display:grid;grid-template-columns:1fr 1fr;gap:10px;
+margin-top:10px;
+}
+.team{
+background:rgba(0,0,0,.4);
+border-radius:14px;padding:10px;
+}
+.team h3{text-align:center;margin:4px 0;font-size:15px}
+ul{padding:0;margin:0;list-style:none}
+li{
+background:rgba(255,255,255,.1);
+margin:4px 0;padding:6px 8px;
+border-radius:8px;
+font-size:14px;
+white-space:nowrap;
+overflow:hidden;text-overflow:ellipsis;
+}
+
+.admin{
+position:fixed;top:6px;right:6px;
+display:flex;gap:6px;
+}
+.admin button{
+font-size:11px;padding:6px 8px;
+border-radius:8px;border:none;
+cursor:pointer;
+}
+.reset{background:gold;color:#000}
+.shuffle{background:#ff7043;color:#000}
 </style>
 </head>
+
 <body>
 
-<div id="loader"><div class="ball">⚽</div></div>
+<div id="loader"><div class="ball"></div></div>
 
-<div class="wrap" id="app" style="display:none">
-  <div class="header">
-    <div style="font-weight:900;font-size:18px">Random Team — زنده</div>
-    <div class="admin-mini">
-      <button id="btnShuffleTop" title="Shuffle (admin)">Mix</button>
-      <button id="btnResetTop" title="Reset (admin)">Reset</button>
-    </div>
-  </div>
+<div class="admin">
+<button class="reset" onclick="adminReset()">Reset</button>
+<button class="shuffle" onclick="adminShuffle()">Shuffle</button>
+</div>
 
-  <div class="grid">
-    <!-- left: input -->
-    <div>
-      <div class="card">
-        <div id="step1">
-          <input id="nameInput" class="input" placeholder="نام خود را وارد کنید (فارسی یا انگلیسی)">
-          <div style="margin-top:8px;font-size:13px;color:rgba(255,255,255,0.75)">اسم خود را وارد کنید، سپس نقش را انتخاب کنید.</div>
-          <button id="nextBtn" class="btn" style="background:linear-gradient(90deg,#00c2a8,#1287ff);color:#001">ادامه</button>
-        </div>
+<div class="container">
+<h1>Random Team</h1>
 
-        <div id="step2" style="display:none">
-          <div style="display:flex;gap:10px">
-            <button id="btnPlayer" class="btn player">⚽ بازیکن</button>
-            <button id="btnGk" class="btn gk">🧤 دروازه‌بان</button>
-          </div>
-        </div>
+<div class="card" id="form">
+<input id="name" placeholder="نام خود را وارد کنید">
+<button class="btn player" onclick="selectRole('player')">بازیکن</button>
+<button class="btn keeper" onclick="selectRole('keeper')">دروازه‌بان</button>
+<button class="btn submit hidden" id="submitBtn" onclick="submitForm()">ثبت</button>
+</div>
 
-        <div style="margin-top:12px" id="noteBox">
-          <div class="note">تعداد اصلی هر تیم تا ۵ نفر است (شامل GK). اضافه‌ها به تعویضی می‌روند.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- right: teams -->
-    <div>
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:800">وضعیت تیم‌ها</div>
-          <div id="count" style="font-size:13px;color:rgba(255,255,255,0.8)">۰ نفر</div>
-        </div>
-        <div style="height:12px"></div>
-        <div class="teams">
-          <div class="team">
-            <h3>🔵 Team A</h3>
-            <ul id="teamA" class="list"></ul>
-            <div style="margin-top:8px;font-weight:700;color:#ffd166">تعویضی A</div>
-            <ul id="subA" class="list"></ul>
-          </div>
-          <div class="team">
-            <h3>🔴 Team B</h3>
-            <ul id="teamB" class="list"></ul>
-            <div style="margin-top:8px;font-weight:700;color:#ffd166">تعویضی B</div>
-            <ul id="subB" class="list"></ul>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
+<div class="teams">
+<div class="team">
+<h3>Team A</h3>
+<ul id="teamA"></ul>
+<h3>Sub A</h3>
+<ul id="subA"></ul>
+</div>
+<div class="team">
+<h3>Team B</h3>
+<ul id="teamB"></ul>
+<h3>Sub B</h3>
+<ul id="subB"></ul>
+</div>
+</div>
 </div>
 
 <script>
-  // ============== CONFIG: جای firebaseConfig خودتون رو اینجا بذارید ==============
-  const firebaseConfig = {
-    apiKey: "PUT_YOUR_APIKEY",
-    authDomain: "PUT_YOUR_AUTHDOMAIN",
-    databaseURL: "PUT_YOUR_DBURL",
-    projectId: "PUT_YOUR_PROJECTID",
-  };
-  // ===========================================================================
+// 🔴 Firebase config (جایگزین کن)
+firebase.initializeApp({
+apiKey: "API_KEY",
+authDomain: "PROJECT.firebaseapp.com",
+databaseURL: "https://PROJECT.firebaseio.com",
+projectId: "PROJECT"
+});
+const db = firebase.database();
 
-  // init firebase
-  try {
-    firebase.initializeApp(firebaseConfig);
-  } catch (e) { console.error('firebase init err', e); alert('Firebase init error - check config'); }
-  const db = firebase.database();
+setTimeout(()=>document.getElementById('loader').style.display='none',500);
 
-  // UI refs
-  const loader = document.getElementById('loader');
-  const app = document.getElementById('app');
-  const nameInput = document.getElementById('nameInput');
-  const nextBtn = document.getElementById('nextBtn');
-  const step2 = document.getElementById('step2');
-  const btnPlayer = document.getElementById('btnPlayer');
-  const btnGk = document.getElementById('btnGk');
-  const teamA = document.getElementById('teamA');
-  const teamB = document.getElementById('teamB');
-  const subA = document.getElementById('subA');
-  const subB = document.getElementById('subB');
-  const countEl = document.getElementById('count');
-  const btnShuffleTop = document.getElementById('btnShuffleTop');
-  const btnResetTop = document.getElementById('btnResetTop');
+let role=null;
+function selectRole(r){
+role=r;
+document.getElementById('submitBtn').classList.remove('hidden');
+}
 
-  const ADMIN_PASS = 'admin12345';
-  const LOCAL_FLAG = 'rt_registered_v1';
-  const TEAMS = 2;
-  const MAX_MAIN = 5;
+const uidKey="joined_v1";
+if(localStorage.getItem(uidKey)) document.getElementById('form').style.display='none';
 
-  function randInt(max){
-    try{ const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % max; } catch(e){ return Math.floor(Math.random()*max); }
-  }
-  function shuffle(arr){
-    for(let i=arr.length-1;i>0;i--){ const j = randInt(i+1); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr;
-  }
+function submitForm(){
+const name=document.getElementById('name').value.trim();
+if(!name||!role) return alert("نام و نقش را وارد کنید");
 
-  setTimeout(()=>{ loader.style.display='none'; app.style.display='block'; }, 600);
+db.ref("players").push({name,role});
+localStorage.setItem(uidKey,"1");
+document.getElementById('form').style.display='none';
+}
 
-  nextBtn.addEventListener('click', ()=>{
-    if(!nameInput.value.trim()){ alert('لطفاً نام خود را وارد کنید'); return; }
-    if(localStorage.getItem(LOCAL_FLAG)){
-      nameInput.value = '';
-      step2.style.display='none';
-      nextBtn.style.display='none';
-      return;
-    }
-    nextBtn.style.display='none';
-    step2.style.display='block';
-  });
+db.ref("players").on("value",snap=>{
+let data=snap.val()||{};
+let players=Object.values(data);
+render(players);
+});
 
-  btnPlayer.addEventListener('click', ()=> registerRole('player'));
-  btnGk.addEventListener('click', ()=> registerRole('goalkeeper'));
+function render(players){
+let A=[],B=[],subA=[],subB=[];
+let keepA=false,keepB=false;
 
-  function registerRole(role){
-    const name = nameInput.value.trim();
-    if(!name) { alert('نام تهی است'); return; }
-    if(localStorage.getItem(LOCAL_FLAG)){ alert('شما قبلاً ثبت کردید'); return; }
-    const ref = db.ref('players').push();
-    ref.set({ name: name, role: role, ts: Date.now() }, (err)=>{
-      if(err){ console.error('push err', err); alert('خطا در ثبت — دوباره تلاش کنید'); }
-      else {
-        localStorage.setItem(LOCAL_FLAG, '1');
-        document.getElementById('step1').style.display='none';
-        step2.style.display='none';
-        nameInput.value = '';
-      }
-    });
-  }
+players.sort(()=>Math.random()-0.5);
 
-  db.ref('players').on('value', snap=>{
-    try{
-      const arr = [];
-      snap.forEach(ch=>{
-        const v = ch.val();
-        arr.push(Object.assign({}, v, { key: ch.key }));
-      });
-      const teams = assignTeams(arr);
-      renderTeams(teams);
-    } catch(e){
-      console.error('on value err', e);
-    }
-  }, err => console.error('firebase on err', err));
+players.forEach(p=>{
+let target;
+if(!keepA && p.role=="keeper"){A.push(p);keepA=true;return}
+if(!keepB && p.role=="keeper"){B.push(p);keepB=true;return}
 
-  function assignTeams(list){
-    const gks = list.filter(p => p.role === 'goalkeeper').slice();
-    const players = list.filter(p => p.role !== 'goalkeeper').slice();
-    shuffle(gks); shuffle(players);
-    const teams = Array.from({length:TEAMS}, ()=>({ main:[], subs:[] }));
-    for(let i=0;i<TEAMS;i++){ if(gks[i]) teams[i].main.push({ name: gks[i].name, role: 'gk' }); }
-    let idx = 0;
-    for(const p of players){
-      let attempts = 0; let placed = false;
-      while(attempts < TEAMS){
-        const t = (idx + attempts) % TEAMS;
-        if(teams[t].main.length < MAX_MAIN){
-          teams[t].main.push({ name: p.name, role: 'player' });
-          placed = true; break;
-        }
-        attempts++;
-      }
-      if(!placed){
-        const subsLens = teams.map(t=>t.subs.length);
-        const pick = subsLens[0] <= subsLens[1] ? 0 : 1;
-        teams[pick].subs.push({ name: p.name, role: 'player' });
-      }
-      idx++;
-    }
-    for(const t of teams){ while(t.main.length > MAX_MAIN){ const moved = t.main.pop(); t.subs.push(moved); } }
-    return teams;
-  }
+target = A.length<=B.length ? A : B;
+if(target.length<5) target.push(p);
+else (target===A?subA:subB).push(p);
+});
 
-  function renderTeams(teams){
-    teamA.innerHTML = ''; teamB.innerHTML=''; subA.innerHTML=''; subB.innerHTML='';
-    teams[0].main.forEach(p=>{ const li = document.createElement('li'); li.className='item'; li.textContent = (p.role==='gk' ? '🧤 ' : '⚽ ') + p.name; teamA.appendChild(li); });
-    teams[0].subs.forEach(p=>{ const li = document.createElement('li'); li.className='item sub'; li.textContent = '🔁 ' + p.name; subA.appendChild(li); });
-    teams[1].main.forEach(p=>{ const li = document.createElement('li'); li.className='item'; li.textContent = (p.role==='gk' ? '🧤 ' : '⚽ ') + p.name; teamB.appendChild(li); });
-    teams[1].subs.forEach(p=>{ const li = document.createElement('li'); li.className='item sub'; li.textContent = '🔁 ' + p.name; subB.appendChild(li); });
-    const total = teams[0].main.length + teams[1].main.length + teams[0].subs.length + teams[1].subs.length;
-    countEl.textContent = total + ' نفر';
-  }
+fill("teamA",A);fill("teamB",B);
+fill("subA",subA);fill("subB",subB);
+}
 
-  btnResetTop.addEventListener('click', ()=> adminAction('reset'));
-  btnShuffleTop.addEventListener('click', ()=> adminAction('shuffle'));
+function fill(id,list){
+const el=document.getElementById(id);
+el.innerHTML="";
+list.forEach(p=>{
+let li=document.createElement("li");
+li.textContent=p.name+(p.role=="keeper"?" 🧤":"");
+el.appendChild(li);
+});
+}
 
-  function adminAction(type){
-    const pass = prompt('رمز ادمین را وارد کنید:');
-    if(pass !== ADMIN_PASS){ alert('رمز اشتباه'); return; }
-    if(type === 'reset'){
-      if(!confirm('آیا مطمئن هستید که می‌خواهید همه چیز حذف شود؟')) return;
-      db.ref('players').remove().then(()=>{
-        localStorage.removeItem(LOCAL_FLAG);
-        alert('ریست انجام شد');
-      }).catch(err => { console.error(err); alert('خطا در ریست'); });
-    } else if(type === 'shuffle'){
-      db.ref('players').once('value').then(snap=>{
-        const arr = [];
-        snap.forEach(ch => { arr.push(ch.val()); });
-        shuffle(arr);
-        db.ref('players').remove().then(()=>{
-          arr.forEach(p=> db.ref('players').push(p) );
-          alert('Mix انجام شد');
-        }).catch(err=>{ console.error('rewrite err', err); alert('خطا در Mix'); });
-      }).catch(err => { console.error('once err', err); alert('خطا در Mix read'); });
-    }
-  }
+function adminReset(){
+if(prompt("رمز ادمین")!=="admin12345")return;
+db.ref("players").remove();
+localStorage.removeItem(uidKey);
+location.reload();
+}
 
-  if(localStorage.getItem(LOCAL_FLAG)){ document.getElementById('step1').style.display='none'; step2.style.display='none'; }
-
-  window.addEventListener('error', e => console.error('window error', e));
-  window.addEventListener('unhandledrejection', e => console.error('promise rej', e));
+function adminShuffle(){
+if(prompt("رمز ادمین")!=="admin12345")return;
+db.ref("players").once("value",snap=>{
+let arr=Object.values(snap.val()||{}).sort(()=>Math.random()-0.5);
+db.ref("players").set(arr);
+});
+}
 </script>
 </body>
 </html>

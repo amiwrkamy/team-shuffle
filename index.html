@@ -4,6 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Random Team — Live</title>
+
 <!-- Firebase compat (Realtime DB) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -135,7 +136,6 @@
   const TEAMS = 2;
   const MAX_MAIN = 5;
 
-  // small util: secure-ish random
   function randInt(max){
     try{ const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % max; } catch(e){ return Math.floor(Math.random()*max); }
   }
@@ -143,13 +143,10 @@
     for(let i=arr.length-1;i>0;i--){ const j = randInt(i+1); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr;
   }
 
-  // show app after loader
   setTimeout(()=>{ loader.style.display='none'; app.style.display='block'; }, 600);
 
-  // Step logic
   nextBtn.addEventListener('click', ()=>{
     if(!nameInput.value.trim()){ alert('لطفاً نام خود را وارد کنید'); return; }
-    // if already registered on this device, hide entry
     if(localStorage.getItem(LOCAL_FLAG)){
       nameInput.value = '';
       step2.style.display='none';
@@ -163,18 +160,15 @@
   btnPlayer.addEventListener('click', ()=> registerRole('player'));
   btnGk.addEventListener('click', ()=> registerRole('goalkeeper'));
 
-  // Register: push to firebase
   function registerRole(role){
     const name = nameInput.value.trim();
     if(!name) { alert('نام تهی است'); return; }
-    // prevent double on this device
     if(localStorage.getItem(LOCAL_FLAG)){ alert('شما قبلاً ثبت کردید'); return; }
     const ref = db.ref('players').push();
     ref.set({ name: name, role: role, ts: Date.now() }, (err)=>{
       if(err){ console.error('push err', err); alert('خطا در ثبت — دوباره تلاش کنید'); }
       else {
         localStorage.setItem(LOCAL_FLAG, '1');
-        // hide inputs (per requirement: after register, inputs gone for this device)
         document.getElementById('step1').style.display='none';
         step2.style.display='none';
         nameInput.value = '';
@@ -182,7 +176,6 @@
     });
   }
 
-  // Live listener: whenever players node changes, compute assignment and render
   db.ref('players').on('value', snap=>{
     try{
       const arr = [];
@@ -190,7 +183,6 @@
         const v = ch.val();
         arr.push(Object.assign({}, v, { key: ch.key }));
       });
-      // run assignment algorithm then render
       const teams = assignTeams(arr);
       renderTeams(teams);
     } catch(e){
@@ -198,26 +190,15 @@
     }
   }, err => console.error('firebase on err', err));
 
-  // Assignment algorithm: takes array of {name,role,...}
   function assignTeams(list){
-    // separate gks and players
     const gks = list.filter(p => p.role === 'goalkeeper').slice();
     const players = list.filter(p => p.role !== 'goalkeeper').slice();
     shuffle(gks); shuffle(players);
-
-    // prepare teams
     const teams = Array.from({length:TEAMS}, ()=>({ main:[], subs:[] }));
-
-    // assign one GK per team if available (else leave empty)
-    for(let i=0;i<TEAMS;i++){
-      if(gks[i]) teams[i].main.push({ name: gks[i].name, role: 'gk' });
-    }
-    // now assign players round-robin to try balance with MAX_MAIN
+    for(let i=0;i<TEAMS;i++){ if(gks[i]) teams[i].main.push({ name: gks[i].name, role: 'gk' }); }
     let idx = 0;
     for(const p of players){
-      // try to place at idx % TEAMS where main length < MAX_MAIN
-      let attempts = 0;
-      let placed = false;
+      let attempts = 0; let placed = false;
       while(attempts < TEAMS){
         const t = (idx + attempts) % TEAMS;
         if(teams[t].main.length < MAX_MAIN){
@@ -227,56 +208,26 @@
         attempts++;
       }
       if(!placed){
-        // choose team with smaller subs
         const subsLens = teams.map(t=>t.subs.length);
         const pick = subsLens[0] <= subsLens[1] ? 0 : 1;
         teams[pick].subs.push({ name: p.name, role: 'player' });
       }
       idx++;
     }
-
-    // ensure no team main > MAX_MAIN (overflow to subs)
-    for(const t of teams){
-      while(t.main.length > MAX_MAIN){
-        const moved = t.main.pop();
-        t.subs.push(moved);
-      }
-    }
-
+    for(const t of teams){ while(t.main.length > MAX_MAIN){ const moved = t.main.pop(); t.subs.push(moved); } }
     return teams;
   }
 
-  // render
   function renderTeams(teams){
-    // clear
     teamA.innerHTML = ''; teamB.innerHTML=''; subA.innerHTML=''; subB.innerHTML='';
-    // Team A
-    teams[0].main.forEach(p=>{
-      const li = document.createElement('li'); li.className='item';
-      li.textContent = (p.role==='gk' ? '🧤 ' : '⚽ ') + p.name;
-      teamA.appendChild(li);
-    });
-    teams[0].subs.forEach(p=>{
-      const li = document.createElement('li'); li.className='item sub';
-      li.textContent = '🔁 ' + p.name; subA.appendChild(li);
-    });
-    // Team B
-    teams[1].main.forEach(p=>{
-      const li = document.createElement('li'); li.className='item';
-      li.textContent = (p.role==='gk' ? '🧤 ' : '⚽ ') + p.name;
-      teamB.appendChild(li);
-    });
-    teams[1].subs.forEach(p=>{
-      const li = document.createElement('li'); li.className='item sub';
-      li.textContent = '🔁 ' + p.name; subB.appendChild(li);
-    });
-
-    // counter
+    teams[0].main.forEach(p=>{ const li = document.createElement('li'); li.className='item'; li.textContent = (p.role==='gk' ? '🧤 ' : '⚽ ') + p.name; teamA.appendChild(li); });
+    teams[0].subs.forEach(p=>{ const li = document.createElement('li'); li.className='item sub'; li.textContent = '🔁 ' + p.name; subA.appendChild(li); });
+    teams[1].main.forEach(p=>{ const li = document.createElement('li'); li.className='item'; li.textContent = (p.role==='gk' ? '🧤 ' : '⚽ ') + p.name; teamB.appendChild(li); });
+    teams[1].subs.forEach(p=>{ const li = document.createElement('li'); li.className='item sub'; li.textContent = '🔁 ' + p.name; subB.appendChild(li); });
     const total = teams[0].main.length + teams[1].main.length + teams[0].subs.length + teams[1].subs.length;
     countEl.textContent = total + ' نفر';
   }
 
-  // admin actions
   btnResetTop.addEventListener('click', ()=> adminAction('reset'));
   btnShuffleTop.addEventListener('click', ()=> adminAction('shuffle'));
 
@@ -290,29 +241,20 @@
         alert('ریست انجام شد');
       }).catch(err => { console.error(err); alert('خطا در ریست'); });
     } else if(type === 'shuffle'){
-      // read all, shuffle client-side, then rewrite
       db.ref('players').once('value').then(snap=>{
         const arr = [];
         snap.forEach(ch => { arr.push(ch.val()); });
         shuffle(arr);
-        // rewrite: remove then push
         db.ref('players').remove().then(()=>{
-          const updates = {};
-          // push each as a new child (using push keys)
-          arr.forEach(p => { db.ref('players').push(p); });
+          arr.forEach(p=> db.ref('players').push(p) );
           alert('Mix انجام شد');
         }).catch(err=>{ console.error('rewrite err', err); alert('خطا در Mix'); });
       }).catch(err => { console.error('once err', err); alert('خطا در Mix read'); });
     }
   }
 
-  // initial: if registered in this device hide inputs
-  if(localStorage.getItem(LOCAL_FLAG)){
-    document.getElementById('step1').style.display='none';
-    step2.style.display='none';
-  }
+  if(localStorage.getItem(LOCAL_FLAG)){ document.getElementById('step1').style.display='none'; step2.style.display='none'; }
 
-  // small safety: catch firebase errors
   window.addEventListener('error', e => console.error('window error', e));
   window.addEventListener('unhandledrejection', e => console.error('promise rej', e));
 </script>

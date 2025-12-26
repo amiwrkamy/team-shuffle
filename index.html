@@ -3,178 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Random Team</title>
+<title>Team Randomizer</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <style>
 body{
-  margin:0;
-  font-family: sans-serif;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
+margin:0;
+font-family:sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:#fff;
 }
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:20px;
-}
-h2{text-align:center;margin-bottom:10px}
+.container{max-width:420px;margin:auto;padding:15px}
 .card{
-  background:rgba(0,0,0,.45);
-  border-radius:12px;
-  padding:15px;
-  margin-bottom:15px;
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(12px);
+border-radius:18px;
+padding:20px;
+box-shadow:0 15px 40px rgba(0,0,0,.5);
+margin-bottom:15px
 }
-input{
-  width:100%;
-  padding:12px;
-  border-radius:8px;
-  border:none;
-  font-size:16px;
+h2,h3{text-align:center}
+input,button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:12px;
+font-size:15px
 }
-.buttons{
-  display:flex;
-  gap:10px;
-  margin-top:10px;
+button{background:#00d2ff;font-weight:bold}
+.radio{display:flex;gap:10px;margin-top:10px}
+.radio label{
+flex:1;
+background:#fff;
+color:#000;
+padding:10px;
+border-radius:10px;
+text-align:center
 }
-button{
-  flex:1;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  font-size:16px;
-  cursor:pointer;
+.top{display:flex;gap:10px}
+ul{list-style:none;padding:0}
+li{
+background:rgba(255,255,255,.15);
+margin-top:6px;
+padding:8px;
+border-radius:8px
 }
-.player{background:#1e90ff}
-.keeper{background:#e74c3c}
-.submit{background:linear-gradient(135deg,#00ffcc,#00bfff);color:#000;font-weight:bold}
-.admin{
-  position:fixed;
-  top:10px;
-  right:10px;
-  font-size:12px;
-  cursor:pointer;
-  opacity:.6;
-}
-.teams{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-ul{list-style:none;padding:0;margin:0}
-li{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.1)}
-small{opacity:.7}
+.hidden{display:none}
 </style>
 </head>
 
 <body>
-<div class="admin" onclick="adminAction()">Admin</div>
-
 <div class="container">
-  <h2>Random Team</h2>
 
-  <div class="card" id="formCard">
-    <input id="name" placeholder="نام خود را وارد کنید">
-    <div class="buttons">
-      <button class="player" onclick="setRole('player')">بازیکن</button>
-      <button class="keeper" onclick="setRole('keeper')">دروازه‌بان</button>
-    </div>
-    <button class="submit" onclick="register()">ثبت</button>
-  </div>
+<div class="top">
+<button onclick="adminReset()">ریست</button>
+<button onclick="adminShuffle()">شانسی دوباره</button>
+</div>
 
-  <div class="teams">
-    <div class="card">
-      <h3>Team A</h3>
-      <ul id="teamA"></ul>
-      <small>تعویضی</small>
-      <ul id="subA"></ul>
-    </div>
-    <div class="card">
-      <h3>Team B</h3>
-      <ul id="teamB"></ul>
-      <small>تعویضی</small>
-      <ul id="subB"></ul>
-    </div>
-  </div>
+<div id="form" class="card">
+<h2>ثبت نام</h2>
+<input id="name" placeholder="نام">
+<div class="radio">
+<label><input type="radio" name="role" value="player" checked> بازیکن</label>
+<label><input type="radio" name="role" value="goalkeeper"> دروازه‌بان</label>
+</div>
+<button onclick="register()">ثبت</button>
+</div>
+
+<div class="card">
+<h3>تیم A</h3>
+<ul id="A"></ul>
+<h3>تیم B</h3>
+<ul id="B"></ul>
+</div>
+
 </div>
 
 <script>
-const key = "random-team-data";
-const lockKey = "random-team-locked";
-let role = null;
+// 🔥 Firebase Config خودت
+const firebaseConfig = {
+apiKey: "XXXX",
+authDomain: "XXXX",
+projectId: "XXXX",
+storageBucket: "XXXX",
+messagingSenderId: "XXXX",
+appId: "XXXX"
+};
 
-function load(){
-  return JSON.parse(localStorage.getItem(key)) || {
-    A:{players:[],keeper:null,subs:[]},
-    B:{players:[],keeper:null,subs:[]}
-  };
-}
-function save(data){
-  localStorage.setItem(key,JSON.stringify(data));
-}
-function render(){
-  const d = load();
-  teamA.innerHTML = "";
-  teamB.innerHTML = "";
-  subA.innerHTML = "";
-  subB.innerHTML = "";
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const ADMIN="admin12345";
 
-  if(d.A.keeper) teamA.innerHTML += `<li>🧤 ${d.A.keeper}</li>`;
-  d.A.players.forEach(n=>teamA.innerHTML+=`<li>${n}</li>`);
-  d.A.subs.forEach(n=>subA.innerHTML+=`<li>${n}</li>`);
+const deviceId = localStorage.deviceId || 
+(localStorage.deviceId = Math.random().toString(36).slice(2));
 
-  if(d.B.keeper) teamB.innerHTML += `<li>🧤 ${d.B.keeper}</li>`;
-  d.B.players.forEach(n=>teamB.innerHTML+=`<li>${n}</li>`);
-  d.B.subs.forEach(n=>subB.innerHTML+=`<li>${n}</li>`);
-}
+db.collection("meta").doc("lock").get().then(d=>{
+if(d.exists && d.data()[deviceId]) form.classList.add("hidden");
+});
 
-function setRole(r){
-  role=r;
-}
+db.collection("teams").onSnapshot(render);
 
 function register(){
-  if(localStorage.getItem(lockKey)) return alert("شما قبلاً ثبت‌نام کرده‌اید");
-  const name = document.getElementById("name").value.trim();
-  if(!name || !role) return alert("نام و نقش را انتخاب کنید");
+const n=name.value.trim();
+if(!n) return alert("نام؟");
+const r=document.querySelector('input[name=role]:checked').value;
 
-  let d = load();
-  let teams = ["A","B"];
-  teams.sort(()=>Math.random()-0.5);
+db.runTransaction(async t=>{
+const A=await t.get(db.doc("teams/A"));
+const B=await t.get(db.doc("teams/B"));
+let teams=[A,B].sort(()=>Math.random()-0.5);
 
-  for(let t of teams){
-    let team = d[t];
-    if(role==="keeper" && !team.keeper){
-      team.keeper = name;
-      finish(d); return;
-    }
-    if(role==="player" && team.players.length < 5){
-      team.players.push(name);
-      finish(d); return;
-    }
-  }
-
-  // تعویضی
-  d[teams[0]].subs.push(name);
-  finish(d);
+for(let tm of teams){
+let d=tm.data()||{gk:null,p:[],s:[]};
+if(r=="goalkeeper" && !d.gk){
+d.gk=n+" (GK)";
+t.set(tm.ref,d); lock(); return;
+}
+if(r=="player"){
+if(d.p.length<5){d.p.push(n);t.set(tm.ref,d);lock();return;}
+else{d.s.push(n+" (تعویضی)");t.set(tm.ref,d);lock();return;}
+}
+}
+alert("جایی نیست");
+});
 }
 
-function finish(d){
-  save(d);
-  localStorage.setItem(lockKey,"1");
-  document.getElementById("formCard").style.display="none";
-  render();
+function lock(){
+db.doc("meta/lock").set({[deviceId]:true},{merge:true});
+form.classList.add("hidden");
 }
 
-function adminAction(){
-  const pass = prompt("رمز ادمین:");
-  if(pass!=="admin12345") return;
-  if(confirm("ریست شود؟")){
-    localStorage.removeItem(key);
-    localStorage.removeItem(lockKey);
-    location.reload();
-  }
+function render(snap){
+["A","B"].forEach(id=>document.getElementById(id).innerHTML="");
+snap.forEach(doc=>{
+let d=doc.data(),ul=document.getElementById(doc.id);
+if(d.gk) ul.innerHTML+=`<li>${d.gk}</li>`;
+d.p?.forEach(x=>ul.innerHTML+=`<li>${x}</li>`);
+d.s?.forEach(x=>ul.innerHTML+=`<li>${x}</li>`);
+});
 }
 
-render();
+function adminReset(){
+if(prompt("رمز")!==ADMIN) return;
+db.collection("teams").get().then(q=>q.forEach(d=>d.ref.delete()));
+db.doc("meta/lock").delete();
+}
+
+function adminShuffle(){
+if(prompt("رمز")!==ADMIN) return;
+adminReset();
+}
 </script>
 </body>
 </html>

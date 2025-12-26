@@ -3,140 +3,106 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Team Maker — Pro Design</title>
+<title>Team Maker — Pro</title>
 <style>
-/* ---------- theme ---------- */
 :root{
-  --bg-dark:#071022;
-  --panel:#0b1a2b;
-  --glass: rgba(255,255,255,0.04);
-  --neon-1:#6ee7b7; /* mint */
-  --neon-2:#60a5fa; /* blue */
-  --neon-3:#fcbf49; /* gold */
-  --neon-4:#f472b6; /* pink */
-  --muted: rgba(255,255,255,0.7);
-  --card-shadow: 0 20px 60px rgba(2,6,23,0.7);
+  --bg-dark:#071025;
+  --panel:rgba(255,255,255,0.03);
+  --neon1:#60a5fa; /* blue */
+  --neon2:#34d399; /* mint */
+  --neon3:#f59e0b; /* gold */
+  --neon4:#f472b6; /* pink */
+  --muted:rgba(255,255,255,0.72);
+  --card-shadow:0 24px 60px rgba(2,8,23,0.75);
   --glass-border: rgba(255,255,255,0.03);
   font-family: Vazirmatn, "Segoe UI", Tahoma, sans-serif;
   -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
 }
-
-/* ---------- base ---------- */
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;background:
-  radial-gradient(1200px 400px at 10% 10%, rgba(96,165,250,0.06), transparent 8%),
-  radial-gradient(900px 300px at 90% 90%, rgba(252,191,73,0.03), transparent 8%),
-  var(--bg-dark);
-  color:#e6f0ff;
-}
-.app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+html,body{height:100%;margin:0;background:radial-gradient(800px 400px at 10% 10%, rgba(96,165,250,0.05), transparent 6%), radial-gradient(900px 300px at 90% 90%, rgba(252,191,73,0.03), transparent 6%), var(--bg-dark);color:#e6f0ff;}
 
-/* ---------- container 3D ---------- */
+/* animated bubbles background */
+.bubbles{
+  position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
+}
+.bubble{
+  position:absolute;border-radius:50%;opacity:0.08;filter:blur(10px);
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+  animation:float linear infinite;
+}
+@keyframes float{
+  0%{transform:translateY(110vh) scale(0.6);opacity:0}
+  10%{opacity:0.06}
+  50%{opacity:0.09}
+  100%{transform:translateY(-30vh) scale(1.1);opacity:0}
+}
+
+/* layout */
+.app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;position:relative;z-index:2}
 .shell{width:100%;max-width:1100px;perspective:1400px}
-.panel{
-  transform-style:preserve-3d;
-  border-radius:18px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  box-shadow:var(--card-shadow), inset 0 1px 0 rgba(255,255,255,0.02);
-  border:1px solid var(--glass-border);
-  transition:transform .28s cubic-bezier(.2,.9,.2,1);
-}
-.panel:hover{transform:translateY(-8px) rotateX(1deg)}
+.panel{transform-style:preserve-3d;border-radius:16px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));box-shadow:var(--card-shadow);border:1px solid var(--glass-border)}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.brand{font-weight:900;font-size:20px;background:linear-gradient(90deg,var(--neon2),var(--neon1));-webkit-background-clip:text;background-clip:text;color:transparent}
+.count{font-weight:800;color:var(--muted)}
 
-/* ---------- header ---------- */
-.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.brand{font-weight:900;font-size:20px;letter-spacing:.6px;background:linear-gradient(90deg,var(--neon-2),var(--neon-1));-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{font-size:13px;color:var(--muted)}
-
-/* ---------- layout ---------- */
+/* grid */
 .grid{display:grid;grid-template-columns:1fr 420px;gap:14px}
 @media(max-width:920px){ .grid{grid-template-columns:1fr} }
 
-/* ---------- form ---------- */
-.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.05));padding:14px;border-radius:12px}
-.field{margin-bottom:8px}
-.input{
-  width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);
-  background:rgba(255,255,255,0.01);color:inherit;font-size:15px;
-  outline:none;
-}
-.roles{display:flex;gap:8px;margin-top:8px}
-.role{
-  flex:1;padding:10px;border-radius:10px;text-align:center;font-weight:800;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.05));
-  cursor:pointer;border:1px solid rgba(255,255,255,0.02);
-}
-.role.active{box-shadow:0 14px 40px rgba(96,165,250,0.08);transform:translateY(-4px);border-color:rgba(255,255,255,0.06)}
+/* controls */
+.card{background:transparent;padding:0}
+.input{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:inherit;font-size:15px}
+.roles{display:flex;gap:8px;margin-top:10px}
+.role{flex:1;padding:10px;border-radius:10px;text-align:center;font-weight:800;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.04));cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+.role.active{box-shadow:0 12px 30px rgba(56,182,255,0.08);transform:translateY(-4px);border-color:rgba(255,255,255,0.06)}
 
-/* ---------- buttons 3D ---------- */
-.btn{
-  display:inline-block;padding:12px 14px;border-radius:12px;border:none;font-weight:900;cursor:pointer;margin-top:10px;width:100%;
-  transform:translateZ(0);
-}
-.btn-primary{background:linear-gradient(90deg,var(--neon-2),var(--neon-1));color:#001;box-shadow:0 12px 30px rgba(96,165,250,0.12)}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
-.btn-admin{background:linear-gradient(90deg,var(--neon-3),#ffd54f);color:#001}
+.btn{display:inline-block;padding:12px 14px;border-radius:12px;border:none;font-weight:900;cursor:pointer;margin-top:12px;width:100%;font-size:15px}
+.btn-primary{background:linear-gradient(90deg,var(--neon1),var(--neon2));color:#021;box-shadow:0 14px 36px rgba(96,165,250,0.12)}
+.btn-alt{background:linear-gradient(90deg,var(--neon3),#ffd54f);color:#041}
+.btn-ghost{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
 
-/* ---------- teams ---------- */
+/* teams */
 .teams{display:flex;gap:12px;margin-top:12px}
 @media(max-width:920px){ .teams{flex-direction:column} }
-.team{
-  flex:1;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));
-  border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.02);
-  min-height:140px;backdrop-filter: blur(6px)
-}
-.team h4{margin:0 0 8px;color:var(--neon-2);font-size:15px}
+.team{flex:1;border-radius:12px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.06));border:1px solid rgba(255,255,255,0.02);min-height:140px}
+.team h4{margin:0 0 8px;color:var(--neon1);font-size:15px}
 ul{list-style:none;padding:0;margin:0}
-li{
-  display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;margin-bottom:8px;
-  background:linear-gradient(90deg, rgba(255,255,255,0.015), rgba(0,0,0,0.08));
-  font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
+li{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;margin-bottom:8px;background:linear-gradient(90deg, rgba(255,255,255,0.015), rgba(0,0,0,0.06));font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ---------- neon accents & lightning ---------- */
-.lightning{position:absolute;left:0;top:0;right:0;height:4px;pointer-events:none;mix-blend-mode:screen}
-.lightning:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg, rgba(96,165,250,0.0), rgba(252,191,73,0.06), rgba(244,114,182,0.04));opacity:0.9;filter:blur(12px);transform:translateZ(0);animation:glow 3s linear infinite}
-@keyframes glow{0%{filter:blur(8px);opacity:.6}50%{filter:blur(16px);opacity:1}100%{filter:blur(8px);opacity:.6}}
+/* splash */
+#splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:40;pointer-events:none;background:transparent}
+#ball{font-size:110px;animation:spin .5s cubic-bezier(.2,.9,.2,1) both}
+@keyframes spin{0%{transform:rotate(0) scale(1);opacity:1}60%{transform:rotate(360deg) scale(1.12);opacity:1}100%{transform:rotate(720deg) scale(1);opacity:0}}
 
-/* ---------- splash (transparent background) ---------- */
-#splash{
-  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:120;pointer-events:none;background:transparent;
-}
-#ball{font-size:110px;animation:ball-spin .5s ease-in-out both}
-@keyframes ball-spin{0%{transform:rotate(0) scale(1);opacity:1}60%{transform:rotate(360deg) scale(1.18);opacity:1}100%{transform:rotate(720deg) scale(1);opacity:0}}
-
-/* ---------- tiny toast ---------- */
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:rgba(3,6,23,0.8);padding:10px 14px;border-radius:10px;color:#fff;z-index:200;display:none}
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:rgba(3,6,23,0.88);padding:10px 14px;border-radius:10px;color:#fff;z-index:60;display:none}
 </style>
 </head>
 <body>
 
+<!-- animated bubbles layer -->
+<div class="bubbles" id="bubbles"></div>
+
 <div class="app">
   <div class="shell">
-    <div class="panel">
-      <div class="lightning" aria-hidden="true"></div>
+    <div class="panel" role="main" aria-label="Team Maker Pro">
 
       <div class="head">
         <div class="brand">TEAM MAKER PRO</div>
-        <div class="sub" id="count">0 نفر</div>
+        <div class="count" id="count">0</div>
       </div>
 
       <div class="grid">
         <div class="card">
-          <div class="field">
-            <input id="name" class="input" placeholder="نام و نام‌خانوادگی (فارسی/انگلیسی)" maxlength="40" />
-          </div>
-
+          <input id="name" class="input" placeholder="نام و نام‌خانوادگی" maxlength="40" />
           <div class="roles" role="radiogroup" aria-label="نقش">
-            <div id="rolePlayer" class="role" role="radio" data-role="player" tabindex="0">⚽ بازیکن</div>
-            <div id="roleGk" class="role" role="radio" data-role="gk" tabindex="0">🧤 دروازه‌بان</div>
+            <div id="rolePlayer" class="role" role="radio" tabindex="0" data-role="player">⚽ بازیکن</div>
+            <div id="roleGk" class="role" role="radio" tabindex="0" data-role="gk">🧤 دروازه‌بان</div>
           </div>
 
-          <button id="btnRegister" class="btn btn-primary">ثبت و عضویت</button>
-
-          <div style="height:10px"></div>
-
-          <button id="btnShuffle" class="btn btn-ghost">🔀 قاطی‌کردن دوباره (ادمین)</button>
-          <button id="btnReset" class="btn btn-admin">🔐 ریست (ادمین)</button>
+          <button id="btnRegister" class="btn btn-primary">ثبت</button>
+          <button id="btnShuffle" class="btn btn-ghost">🔀 قاطی‌کردن (ادمین)</button>
+          <button id="btnReset" class="btn btn-alt">🔐 ریست (ادمین)</button>
         </div>
 
         <div>
@@ -145,7 +111,7 @@ li{
               <h4>🔵 تیم A</h4>
               <ul id="teamA"></ul>
               <div style="height:8px"></div>
-              <h4 style="font-size:13px;color:#ffd54f">تعویضی A</h4>
+              <h4 style="font-size:13px;color:var(--neon3)">تعویضی A</h4>
               <ul id="subsA"></ul>
             </div>
 
@@ -153,7 +119,7 @@ li{
               <h4>🔴 تیم B</h4>
               <ul id="teamB"></ul>
               <div style="height:8px"></div>
-              <h4 style="font-size:13px;color:#ffd54f">تعویضی B</h4>
+              <h4 style="font-size:13px;color:var(--neon3)">تعویضی B</h4>
               <ul id="subsB"></ul>
             </div>
           </div>
@@ -164,17 +130,15 @@ li{
   </div>
 </div>
 
-<div id="splash" aria-hidden="true"><div id="ball">⚽</div></div>
+<div id="splash"><div id="ball">⚽</div></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
-/* ---------- robust script ---------- */
 (() => {
   'use strict';
   const ADMIN_PASS = 'admin12345';
-  const STORAGE_KEY = 'TEAM_MAKER_PRO_V2';
-  const DEVICE_KEY = 'TEAM_MAKER_DEV_V2';
-
+  const STORAGE = 'TEAM_PRO_V3';
+  const DEV_KEY = 'TEAM_PRO_DEV_V3';
   const refs = {
     name: document.getElementById('name'),
     rolePlayer: document.getElementById('rolePlayer'),
@@ -188,211 +152,181 @@ li{
     subsB: document.getElementById('subsB'),
     count: document.getElementById('count'),
     splash: document.getElementById('splash'),
-    toast: document.getElementById('toast')
+    toast: document.getElementById('toast'),
+    bubbles: document.getElementById('bubbles')
   };
 
-  // device id
-  function getDevice(){
+  // bubbles populate
+  (function makeBubbles(){
     try{
-      let d = localStorage.getItem(DEVICE_KEY);
-      if(!d){ d = Date.now().toString(36) + Math.random().toString(36).slice(2,8); localStorage.setItem(DEVICE_KEY, d); }
-      return d;
-    }catch(e){
-      return 'dev-'+Math.random().toString(36).slice(2,8);
-    }
-  }
-  const DEVICE = getDevice();
-
-  // load/save
-  function load(){
-    try{ const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : { players: [] }; }
-    catch(e){ console.error('load err', e); return { players: [] }; }
-  }
-  function save(state){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){ console.error('save err', e); } }
-
-  let state = load();
-
-  // random helper (use crypto if available)
-  function randInt(max){
-    try{
-      if(window.crypto && crypto.getRandomValues){
-        const arr = new Uint32Array(1);
-        crypto.getRandomValues(arr);
-        return arr[0] % max;
+      const colors = ['rgba(96,165,250,0.08)','rgba(52,211,153,0.06)','rgba(252,191,73,0.05)','rgba(244,114,182,0.05)'];
+      const n = 10;
+      for(let i=0;i<n;i++){
+        const b = document.createElement('div'); b.className='bubble';
+        const size = 60 + Math.round(Math.random()*220);
+        b.style.width = size+'px'; b.style.height = size+'px';
+        b.style.left = Math.round(Math.random()*100)+'%';
+        b.style.bottom = -(Math.random()*40+10)+'vh';
+        b.style.background = colors[i%colors.length];
+        b.style.animationDuration = (20 + Math.random()*30)+'s';
+        b.style.opacity = (0.02 + Math.random()*0.06).toString();
+        refs.bubbles.appendChild(b);
       }
-    }catch(e){}
-    return Math.floor(Math.random()*max);
-  }
+    }catch(e){ console.error('bubbles err', e); }
+  })();
 
-  // splash removal after animationend
-  (function handleSplash(){
+  // splash removal
+  (function hideSplash(){
     try{
       const s = refs.splash;
       if(!s) return;
       const ball = document.getElementById('ball');
       if(ball){
-        ball.addEventListener('animationend', ()=>{ try{s.remove();}catch(e){} }, { once:true });
-        // fallback
+        ball.addEventListener('animationend', ()=>{ try{ s.remove(); }catch(e){} }, { once:true });
         setTimeout(()=>{ if(document.body.contains(s)) s.remove(); }, 900);
-      } else {
-        s.remove();
-      }
-    }catch(e){ console.error('splash err', e); }
+      } else s.remove();
+    }catch(e){ console.error('splash hide err', e); }
   })();
 
-  // UI helpers
-  function toast(msg, ms=1600){
+  // device id
+  function getDevice(){
     try{
-      refs.toast.textContent = msg; refs.toast.style.display='block';
-      clearTimeout(refs._t); refs._t = setTimeout(()=>{ refs.toast.style.display='none'; }, ms);
-    }catch(e){ console.log(msg); }
+      let d = localStorage.getItem(DEV_KEY);
+      if(!d){ d = Date.now().toString(36)+Math.random().toString(36).slice(2,8); localStorage.setItem(DEV_KEY,d); }
+      return d;
+    }catch(e){ return 'dev-'+Math.random().toString(36).slice(2,8); }
   }
+  const DEVICE = getDevice();
 
-  // role selection
+  function load(){ try{ const s = localStorage.getItem(STORAGE); return s? JSON.parse(s) : { players:[] }; }catch(e){ return { players:[] }; } }
+  function save(st){ try{ localStorage.setItem(STORAGE, JSON.stringify(st)); }catch(e){ console.error('save err', e); } }
+  let state = load();
+
+  function toast(msg, ms=1500){ try{ refs.toast.textContent=msg; refs.toast.style.display='block'; clearTimeout(refs._t); refs._t=setTimeout(()=>refs.toast.style.display='none',ms); }catch(e){ console.log(msg); } }
+
+  // role select
   let selectedRole = null;
   function setRole(r){
     selectedRole = r;
     refs.rolePlayer.classList.toggle('active', r==='player');
     refs.roleGk.classList.toggle('active', r==='gk');
-    refs.rolePlayer.setAttribute('aria-checked', r==='player');
-    refs.roleGk.setAttribute('aria-checked', r==='gk');
   }
   refs.rolePlayer.addEventListener('click', ()=>setRole('player'));
   refs.roleGk.addEventListener('click', ()=>setRole('gk'));
   refs.rolePlayer.addEventListener('keypress', (e)=>{ if(e.key==='Enter') setRole('player'); });
   refs.roleGk.addEventListener('keypress', (e)=>{ if(e.key==='Enter') setRole('gk'); });
 
-  // assignment rule: 2 teams, max 5 incl GK, GK max1 per team, extras -> subs balanced
-  function assign(p, stateObj){
-    const teams = { A: [], B: [] }, subs = { A: [], B: [] };
-    for(const q of stateObj.players){
-      if(q.team){
-        if(q.sub) subs[q.team].push(q); else teams[q.team].push(q);
-      }
+  // random util
+  function randInt(max){ try{ if(window.crypto && crypto.getRandomValues){ const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % max; } }catch(e){} return Math.floor(Math.random()*max); }
+
+  // assign according to rules
+  function assign(p, st){
+    const teams={A:[],B:[]}, subs={A:[],B:[]};
+    for(const q of st.players){
+      if(q.team){ if(q.sub) subs[q.team].push(q); else teams[q.team].push(q); }
     }
-    // GK handling
-    if(p.role === 'gk'){
+    if(p.role==='gk'){
       const hasA = teams.A.some(x=>x.role==='gk'), hasB = teams.B.some(x=>x.role==='gk');
       if(hasA && hasB) return { ok:false, reason:'gk_all' };
       const candidates = [];
       if(!hasA && teams.A.length < 5) candidates.push('A');
       if(!hasB && teams.B.length < 5) candidates.push('B');
-      if(candidates.length === 0) return { ok:false, reason:'gk_no_space' };
+      if(!candidates.length) return { ok:false, reason:'gk_nospace' };
       const pick = candidates[randInt(candidates.length)];
-      p.team = pick; p.sub = false; return { ok:true, team: pick, as:'main' };
+      p.team = pick; p.sub = false; return { ok:true, team:pick, as:'main' };
     }
-    // player handling
-    const aMain = teams.A.length, bMain = teams.B.length;
-    const available = [];
-    if(aMain < 5) available.push('A');
-    if(bMain < 5) available.push('B');
-    if(available.length > 0){
-      const minMain = Math.min(aMain, bMain);
+    // player
+    const aMain=teams.A.length, bMain=teams.B.length;
+    const available=[];
+    if(aMain<5) available.push('A');
+    if(bMain<5) available.push('B');
+    if(available.length){
+      const minMain = Math.min(aMain,bMain);
       const balanced = available.filter(t => (t==='A'?aMain:bMain) === minMain);
       const pick = balanced[randInt(balanced.length)];
-      p.team = pick; p.sub = false; return { ok:true, team: pick, as:'main' };
+      p.team = pick; p.sub=false; return { ok:true, team:pick, as:'main' };
     }
-    // mains full -> subs to smaller subs
-    const sa = subs.A.length, sb = subs.B.length;
+    // mains full -> subs balanced
+    const sa=subs.A.length, sb=subs.B.length;
     const pick = sa <= sb ? 'A' : 'B';
-    p.team = pick; p.sub = true; return { ok:true, team: pick, as:'sub' };
+    p.team = pick; p.sub = true; return { ok:true, team:pick, as:'sub' };
   }
 
-  // register handler
+  // register
   refs.btnRegister.addEventListener('click', ()=>{
     try{
       const name = (refs.name.value || '').trim();
-      if(!name) { toast('اسم معتبر وارد کنید'); return; }
-      if(!selectedRole) { toast('نقش را انتخاب کنید'); return; }
-      if(state.players.some(x=>x.device === DEVICE)) { toast('این دستگاه قبلاً ثبت نام کرده'); return; }
+      if(!name){ toast('نام معتبر وارد کن'); return; }
+      if(!selectedRole){ toast('نقش را انتخاب کن'); return; }
+      if(state.players.some(x=>x.device === DEVICE)){ toast('این دستگاه قبلاً ثبت نام کرده'); return; }
       const player = { id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), name, role: selectedRole, device: DEVICE };
       const res = assign(player, state);
       if(!res.ok){
-        if(res.reason === 'gk_all') { toast('دروازه‌بان برای هر دو تیم ثبت شده'); return; }
-        if(res.reason === 'gk_no_space') { toast('فضای خالی لازم برای دروازه‌بان نیست'); return; }
-        toast('قابلیت ثبت وجود ندارد'); return;
+        if(res.reason==='gk_all'){ toast('دروازه‌بان هر دو تیم ثبت شده'); return; }
+        if(res.reason==='gk_nospace'){ toast('فضای دروازه‌بان موجود نیست'); return; }
+        toast('ثبت امکان‌پذیر نیست'); return;
       }
       state.players.push(player); save(state); render(); refs.name.value=''; setRole(null); toast('ثبت شد ✅');
-    }catch(e){ console.error('register err', e); toast('خطای ثبت'); }
+    }catch(e){ console.error('register err', e); toast('خطا'); }
   });
 
   // admin shuffle
   refs.btnShuffle.addEventListener('click', ()=>{
     try{
-      const pass = prompt('رمز ادمین:');
-      if(pass === null) return;
-      if(pass !== ADMIN_PASS){ toast('رمز اشتباه'); return; }
-      // require at least 2 GK to reshuffle
-      const gks = state.players.filter(p=>p.role==='gk');
-      if(gks.length < 2) { toast('برای قاطی دوباره حداقل 2 دروازه‌بان لازم است'); return; }
-      // shuffle list strongly
-      for(let i = state.players.length - 1; i > 0; i--){
-        const j = randInt(i+1);
-        [state.players[i], state.players[j]] = [state.players[j], state.players[i]];
-      }
-      // clear assignments
-      for(const p of state.players){ delete p.team; delete p.sub; }
-      // assign GK first
-      const gkList = state.players.filter(p=>p.role==='gk');
-      for(let i=0;i<2 && i<gkList.length;i++){
-        gkList[i].team = i===0 ? 'A' : 'B'; gkList[i].sub = false;
-      }
-      // assign others in round-robin with constraints
-      let rr = 0;
-      for(const p of state.players.filter(x=>!x.team)){
+      const p = prompt('رمز ادمین:');
+      if(p === null) return;
+      if(p !== ADMIN_PASS){ toast('رمز اشتباه'); return; }
+      const gks = state.players.filter(x=>x.role==='gk');
+      if(gks.length < 2){ toast('حداقل 2 دروازه‌بان لازم است'); return; }
+      for(let i=state.players.length-1;i>0;i--){ const j = randInt(i+1); [state.players[i], state.players[j]] = [state.players[j], state.players[i]]; }
+      for(const pl of state.players){ delete pl.team; delete pl.sub; }
+      const gkList = state.players.filter(x=>x.role==='gk');
+      for(let i=0;i<2 && i<gkList.length;i++){ gkList[i].team = i===0 ? 'A' : 'B'; gkList[i].sub = false; }
+      let rr=0;
+      for(const pl of state.players.filter(x=>!x.team)){
         const aMain = state.players.filter(x=>x.team==='A' && !x.sub).length;
         const bMain = state.players.filter(x=>x.team==='B' && !x.sub).length;
-        const prefer = rr % 2 === 0 ? 'A' : 'B';
-        const alt = prefer === 'A' ? 'B' : 'A';
-        if((prefer === 'A' && aMain < 5) || (prefer === 'B' && bMain < 5)) { p.team = prefer; p.sub = false; }
-        else if((alt === 'A' && aMain < 5) || (alt === 'B' && bMain < 5)) { p.team = alt; p.sub = false; }
-        else {
-          const sa = state.players.filter(x=>x.team==='A' && x.sub).length;
-          const sb = state.players.filter(x=>x.team==='B' && x.sub).length;
-          p.team = sa <= sb ? 'A' : 'B'; p.sub = true;
-        }
+        const prefer = rr%2===0 ? 'A' : 'B'; const alt = prefer==='A' ? 'B' : 'A';
+        if((prefer==='A' && aMain<5) || (prefer==='B' && bMain<5)){ pl.team=prefer; pl.sub=false; }
+        else if((alt==='A' && aMain<5) || (alt==='B' && bMain<5)){ pl.team=alt; pl.sub=false; }
+        else { const sa=state.players.filter(x=>x.team==='A'&&x.sub).length; const sb=state.players.filter(x=>x.team==='B'&&x.sub).length; pl.team = sa <= sb ? 'A' : 'B'; pl.sub=true; }
         rr++;
       }
-      save(state); render(); toast('تیم‌ها دوباره شانسی چیده شدند');
+      save(state); render(); toast('تیم‌ها قاطی شدند');
     }catch(e){ console.error('shuffle err', e); toast('خطا'); }
   });
 
   // admin reset
   refs.btnReset.addEventListener('click', ()=>{
     try{
-      const pass = prompt('رمز ادمین:');
-      if(pass === null) return;
-      if(pass !== ADMIN_PASS){ toast('رمز اشتباه'); return; }
-      if(!confirm('آیا مطمئنی همه چیز پاک شود؟')) return;
-      state = { players: [] }; save(state); localStorage.removeItem(DEVICE_KEY); render(); toast('پاک شد');
+      const p = prompt('رمز ادمین:');
+      if(p === null) return;
+      if(p !== ADMIN_PASS){ toast('رمز اشتباه'); return; }
+      if(!confirm('آیا مطمئنی پاک شود؟')) return;
+      state = { players: [] }; save(state); localStorage.removeItem(DEV_KEY); render(); toast('پاک شد');
     }catch(e){ console.error('reset err', e); toast('خطا'); }
   });
 
-  // render UI
   function render(){
     try{
-      refs.teamA.innerHTML = ''; refs.teamB.innerHTML = ''; refs.subsA.innerHTML = ''; refs.subsB.innerHTML = '';
-      // ensure assignment for any legacy players
-      for(const p of state.players){ if(!p.team){ const tmp = assign({...p}, state); p.team = tmp.team; p.sub = tmp.as==='sub'; } }
-      const A_main = state.players.filter(p=>p.team==='A' && !p.sub);
-      const B_main = state.players.filter(p=>p.team==='B' && !p.sub);
-      const A_subs = state.players.filter(p=>p.team==='A' && p.sub);
-      const B_subs = state.players.filter(p=>p.team==='B' && p.sub);
-      for(const p of A_main) refs.teamA.insertAdjacentHTML('beforeend', `<li><span style="min-width:26px;display:inline-block">${p.role==='gk'?'🧤':'⚽'}</span>${escapeHtml(p.name)}</li>`);
-      for(const p of B_main) refs.teamB.insertAdjacentHTML('beforeend', `<li><span style="min-width:26px;display:inline-block">${p.role==='gk'?'🧤':'⚽'}</span>${escapeHtml(p.name)}</li>`);
+      refs.teamA.innerHTML=''; refs.teamB.innerHTML=''; refs.subsA.innerHTML=''; refs.subsB.innerHTML='';
+      // ensure assignment
+      for(const p of state.players){ if(!p.team){ const r = assign({...p}, state); p.team = r.team; p.sub = r.as === 'sub'; } }
+      const A_main = state.players.filter(x=>x.team==='A' && !x.sub);
+      const B_main = state.players.filter(x=>x.team==='B' && !x.sub);
+      const A_subs = state.players.filter(x=>x.team==='A' && x.sub);
+      const B_subs = state.players.filter(x=>x.team==='B' && x.sub);
+      for(const p of A_main) refs.teamA.insertAdjacentHTML('beforeend', `<li><span style="min-width:24px;display:inline-block">${p.role==='gk'?'🧤':'⚽'}</span>${escapeHtml(p.name)}</li>`);
+      for(const p of B_main) refs.teamB.insertAdjacentHTML('beforeend', `<li><span style="min-width:24px;display:inline-block">${p.role==='gk'?'🧤':'⚽'}</span>${escapeHtml(p.name)}</li>`);
       for(const p of A_subs) refs.subsA.insertAdjacentHTML('beforeend', `<li>🔁 ${escapeHtml(p.name)}</li>`);
       for(const p of B_subs) refs.subsB.insertAdjacentHTML('beforeend', `<li>🔁 ${escapeHtml(p.name)}</li>`);
-      refs.count.textContent = `${state.players.length} نفر`;
+      refs.count.textContent = state.players.length;
     }catch(e){ console.error('render err', e); }
   }
-
   function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  // initial render
+  // init
   render();
-
-  // expose for debug
-  window.TEAM_MAKER = { state, saveState: (s)=>{ state = s; save(state); render(); }, render };
 
 })();
 </script>
